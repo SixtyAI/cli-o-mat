@@ -1,0 +1,9 @@
+golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment@latest
+golang.org/x/tools/go/analysis/passes/findcall/cmd/findcall@latest
+golang.org/x/tools/go/analysis/passes/ifaceassert/cmd/ifaceassert@latest
+golang.org/x/tools/go/analysis/passes/lostcancel/cmd/lostcancel@latest
+golang.org/x/tools/go/analysis/passes/nilness/cmd/nilness@latest
+golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow@latest
+golang.org/x/tools/go/analysis/passes/stringintconv/cmd/stringintconv@latest
+golang.org/x/tools/go/analysis/passes/unmarshal/cmd/unmarshal@latest
+mvdan.cc/gofumpt@latest
