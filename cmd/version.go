@@ -6,7 +6,7 @@ package cmd
 
 import (
 	_ "embed"
-	"fmt"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -21,7 +21,7 @@ var versionCmd = &cobra.Command{
 	Short: "Show version.",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("cli-o-mat v%s\n", Version) // nolint: forbidigo
+		log.Printf("cli-o-mat v%s", Version)
 	},
 }
 
