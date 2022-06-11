@@ -28,7 +28,7 @@ clean: ## Clean up.
 	go clean
 
 generate:  ## Generate any code, as needed.
-	echo "$(shell cat .version) (SHA $(shell git rev-parse --short HEAD), $(shell date -u +%Y-%m-%dT%H:%M:%S%z))" > .version_string
+	echo "$(shell cat .version) (SHA $(shell git rev-parse --short HEAD), $(shell date -u +%Y-%m-%dT%H:%M:%S%z))" > cmd/.version_string
 	GOOS=${GOOS} GOARCH=${GOARCH} go generate ./...
 
 test: generate ## Run test suite.
