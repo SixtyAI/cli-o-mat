@@ -15,6 +15,7 @@ import (
 //go:embed .version_string
 var Version string
 
+// nolint: gochecknoglobals
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Show version.",
@@ -24,6 +25,7 @@ var versionCmd = &cobra.Command{
 	},
 }
 
+// nolint: gochecknoinits
 func init() {
 	rootCmd.AddCommand(versionCmd)
 }

@@ -25,6 +25,8 @@ linters:
   - tparallel
   - unparam
   - wastedassign
+  # And the following are turned off because I'm not sure they're helpful:
+  - exhaustruct
 
 run:
   deadline: 5m
