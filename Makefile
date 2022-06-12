@@ -1,4 +1,4 @@
-APP_NAME?=cli-o-mat
+APP_NAME?=omat
 
 GOOS?=darwin
 GOARCH?=arm64
