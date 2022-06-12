@@ -7,12 +7,13 @@ import (
 )
 
 // nolint: gochecknoglobals
-var helpCmd = &cobra.Command{
-	Use:   "help",
+var manualCmd = &cobra.Command{
+	Use:   "manual",
 	Short: "Shows the full documentation for this tool",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(`omat
+		fmt.Println(`Omat Manual
+
 Configuration
 
 omat will look for a file named .omat.yml, starting in the current directory and
@@ -34,5 +35,5 @@ Run without options for a list of sub-commands.`)
 
 // nolint: gochecknoinits
 func init() {
-	rootCmd.AddCommand(helpCmd)
+	rootCmd.AddCommand(manualCmd)
 }
