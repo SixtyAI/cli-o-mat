@@ -26,10 +26,15 @@ func Execute() {
 
 // nolint: gochecknoinits
 func init() {
-	rootCmd.PersistentFlags().StringVarP(&environment, "env", "", "", "Which environment to operate in")
+	rootCmd.PersistentFlags().StringVarP(&region, "region", "", "", "Which AWS region to operate in")
+	rootCmd.PersistentFlags().StringVarP(&environment, "env", "", "", "Which logical environment to operate in")
 }
 
-var environment string // nolint: gochecknoglobals
+// nolint: gochecknoglobals
+var (
+	region      string
+	environment string
+)
 
 func loadOmatConfig() (*config.Omat, error) {
 	configFile, err := config.FindOmatConfig(".")
@@ -44,6 +49,10 @@ func loadOmatConfig() (*config.Omat, error) {
 	}
 
 	omatConfig.LoadConfigFromEnv()
+
+	if region != "" {
+		omatConfig.Region = region
+	}
 
 	if environment != "" {
 		omatConfig.Environment = environment

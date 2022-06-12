@@ -14,7 +14,7 @@ import (
 type Omat struct {
 	OrganizationPrefix string `yaml:"organizationPrefix"`
 	Region             string `yaml:"region"`
-	Environment        string
+	Environment        string `yaml:"environment"`
 }
 
 func NewOmat() *Omat {
@@ -39,16 +39,16 @@ func (omat *Omat) LoadConfigFromFile(path string) error {
 }
 
 func (omat *Omat) LoadConfigFromEnv() {
-	if environment, wasSet := os.LookupEnv("OMAT_ENVIRONMENT"); wasSet {
-		omat.Environment = environment
+	if organizationPrefix, wasSet := os.LookupEnv("OMAT_ORGANIZATION_PREFIX"); wasSet {
+		omat.OrganizationPrefix = organizationPrefix
 	}
 
 	if region, wasSet := os.LookupEnv("OMAT_REGION"); wasSet {
 		omat.Region = region
 	}
 
-	if organizationPrefix, wasSet := os.LookupEnv("OMAT_ORGANIZATION_PREFIX"); wasSet {
-		omat.OrganizationPrefix = organizationPrefix
+	if environment, wasSet := os.LookupEnv("OMAT_ENVIRONMENT"); wasSet {
+		omat.Environment = environment
 	}
 }
 
