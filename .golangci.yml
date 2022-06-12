@@ -5,6 +5,11 @@ linters-settings:
     check-shadowing: true
   gofmt:
     simplify: true
+  gci:
+    sections:
+      - standard
+      - prefix(github.com/FasterBetter)
+      - default
 
 linters:
   enable-all: true
