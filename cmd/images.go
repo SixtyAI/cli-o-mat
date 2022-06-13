@@ -20,13 +20,13 @@ func showImages(images []*ec2.Image) {
 		return aws.StringValue(images[i].Name) < aws.StringValue(images[j].Name)
 	})
 
-	const imagesFormat = "%-64s %-6s %-21s %s\n"
+	const imagesFormat = "%-21s %-6s %-9s %s\n"
 
-	fmt.Printf(imagesFormat, "Name", "Arch", "ID", "State")
+	fmt.Printf(imagesFormat, "ID", "Arch", "State", "Name")
 
 	for _, image := range images {
-		fmt.Printf(imagesFormat, aws.StringValue(image.Name), aws.StringValue(image.Architecture),
-			aws.StringValue(image.ImageId), aws.StringValue(image.State))
+		fmt.Printf(imagesFormat, aws.StringValue(image.ImageId), aws.StringValue(image.Architecture),
+			aws.StringValue(image.State), aws.StringValue(image.Name))
 	}
 }
 
