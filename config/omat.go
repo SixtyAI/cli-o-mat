@@ -15,6 +15,7 @@ type Omat struct {
 	OrganizationPrefix string `yaml:"organizationPrefix"`
 	Region             string `yaml:"region"`
 	Environment        string `yaml:"environment"`
+	DeployService      string `yaml:"deployService"`
 }
 
 func NewOmat() *Omat {
@@ -22,6 +23,7 @@ func NewOmat() *Omat {
 		OrganizationPrefix: "teak",
 		Region:             "us-east-1",
 		Environment:        "development",
+		DeployService:      "deployomat",
 	}
 }
 
@@ -49,6 +51,10 @@ func (omat *Omat) LoadConfigFromEnv() {
 
 	if environment, wasSet := os.LookupEnv("OMAT_ENVIRONMENT"); wasSet {
 		omat.Environment = environment
+	}
+
+	if deployService, wasSet := os.LookupEnv("OMAT_DEPLOY_SERVICE"); wasSet {
+		omat.DeployService = deployService
 	}
 }
 
