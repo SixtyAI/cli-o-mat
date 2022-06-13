@@ -12,10 +12,13 @@ import (
 )
 
 type Omat struct {
+	Credentials *CredentialCache
+
 	OrganizationPrefix string `yaml:"organizationPrefix"`
 	Region             string `yaml:"region"`
 	Environment        string `yaml:"environment"`
 	DeployService      string `yaml:"deployService"`
+	BuildAccountSlug   string `yaml:"buildAccountSlug"`
 }
 
 func NewOmat() *Omat {
@@ -24,10 +27,29 @@ func NewOmat() *Omat {
 		Region:             "us-east-1",
 		Environment:        "development",
 		DeployService:      "deployomat",
+		BuildAccountSlug:   "ci-cd",
 	}
 }
 
-func (omat *Omat) LoadConfigFromFile(path string) error {
+func findOmatConfig(dir string) (string, error) {
+	result, err := filepath.Abs(dir)
+	if err != nil {
+		return result, errors.WithStack(err)
+	}
+
+	expectedPath := path.Join(result, ".omat.yml")
+	if _, err = os.Stat(expectedPath); errors.Is(err, os.ErrNotExist) {
+		if result != "/" {
+			return findOmatConfig(filepath.Dir(result))
+		}
+
+		return result, errors.New("Couldn't find .omat.yml anywhere")
+	}
+
+	return expectedPath, nil
+}
+
+func (omat *Omat) loadConfigFromFile(path string) error {
 	configData, err := ioutil.ReadFile(path)
 	if err != nil {
 		return errors.WithStack(err)
@@ -40,7 +62,7 @@ func (omat *Omat) LoadConfigFromFile(path string) error {
 	return nil
 }
 
-func (omat *Omat) LoadConfigFromEnv() {
+func (omat *Omat) loadConfigFromEnv() {
 	if organizationPrefix, wasSet := os.LookupEnv("OMAT_ORGANIZATION_PREFIX"); wasSet {
 		omat.OrganizationPrefix = organizationPrefix
 	}
@@ -56,26 +78,31 @@ func (omat *Omat) LoadConfigFromEnv() {
 	if deployService, wasSet := os.LookupEnv("OMAT_DEPLOY_SERVICE"); wasSet {
 		omat.DeployService = deployService
 	}
+
+	if buildAccountSlug, wasSet := os.LookupEnv("OMAT_BUILD_ACCOUNT_SLUG"); wasSet {
+		omat.BuildAccountSlug = buildAccountSlug
+	}
+}
+
+func (omat *Omat) LoadConfig() error {
+	path, err := findOmatConfig(".")
+	if err != nil {
+		return errors.Wrap(err, "couldn't find config file")
+	}
+
+	if err = omat.loadConfigFromFile(path); err != nil {
+		return errors.Wrap(err, "couldn't load config from file")
+	}
+
+	omat.loadConfigFromEnv()
+
+	return nil
+}
+
+func (omat *Omat) InitCredentials() {
+	omat.Credentials = newCredentialCache(omat)
 }
 
 func (omat *Omat) Prefix() string {
 	return fmt.Sprintf("/%s/%s", omat.OrganizationPrefix, omat.Environment)
-}
-
-func FindOmatConfig(dir string) (string, error) {
-	result, err := filepath.Abs(dir)
-	if err != nil {
-		return result, errors.WithStack(err)
-	}
-
-	expectedPath := path.Join(result, ".omat.yml")
-	if _, err = os.Stat(expectedPath); errors.Is(err, os.ErrNotExist) {
-		if result != "/" {
-			return FindOmatConfig(filepath.Dir(result))
-		}
-
-		return result, errors.New("Couldn't find .omat.yml anywhere")
-	}
-
-	return expectedPath, nil
 }

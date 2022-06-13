@@ -1,11 +1,11 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/FasterBetter/cli-o-mat/config"
 
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -29,40 +29,41 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&region, "region", "", "", "Which AWS region to operate in")
 	rootCmd.PersistentFlags().StringVarP(&environment, "env", "", "", "Which logical environment to operate in")
 	rootCmd.PersistentFlags().StringVarP(&deployService, "deploy-service", "", "", "The name of the deploy_o_mat service")
+	rootCmd.PersistentFlags().StringVarP(&buildAccountSlug, "build-slug", "", "", "The build-account slug (e.g. ci-cd)")
 }
 
 // nolint: gochecknoglobals
 var (
-	region        string
-	environment   string
-	deployService string
+	region           string
+	environment      string
+	deployService    string
+	buildAccountSlug string
 )
 
 func loadOmatConfig() (*config.Omat, error) {
-	configFile, err := config.FindOmatConfig(".")
-	if err != nil {
-		return nil, fmt.Errorf("%w", err)
+	omat := config.NewOmat()
+
+	if err := omat.LoadConfig(); err != nil {
+		return nil, errors.Wrap(err, "failed to load omat config")
 	}
-
-	omatConfig := config.NewOmat()
-
-	if err = omatConfig.LoadConfigFromFile(configFile); err != nil {
-		return nil, fmt.Errorf("%w", err)
-	}
-
-	omatConfig.LoadConfigFromEnv()
 
 	if region != "" {
-		omatConfig.Region = region
+		omat.Region = region
 	}
 
 	if environment != "" {
-		omatConfig.Environment = environment
+		omat.Environment = environment
 	}
 
 	if deployService != "" {
-		omatConfig.DeployService = deployService
+		omat.DeployService = deployService
 	}
 
-	return omatConfig, nil
+	if buildAccountSlug != "" {
+		omat.BuildAccountSlug = buildAccountSlug
+	}
+
+	omat.InitCredentials()
+
+	return omat, nil
 }
