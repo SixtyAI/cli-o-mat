@@ -3,15 +3,12 @@ package cmd
 import (
 	"fmt"
 	"sort"
-	"strings"
 
+	"github.com/FasterBetter/cli-o-mat/awsutil"
 	"github.com/FasterBetter/cli-o-mat/util"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/spf13/cobra"
 )
 
@@ -44,33 +41,12 @@ var imagesCmd = &cobra.Command{
 			util.Fatal(err)
 		}
 
-		paramPrefix := omatConfig.Prefix()
-
-		rootSess := session.Must(session.NewSession())
-		ssmClient := ssm.New(rootSess, aws.NewConfig().WithRegion(omatConfig.Region))
-
-		roleParamName := fmt.Sprintf("%s/ci-cd/roles/admin", paramPrefix)
-		roleParam, err := ssmClient.GetParameter(&ssm.GetParameterInput{
-			Name: aws.String(roleParamName),
-		})
+		session, cfg, err := awsutil.LoadCredentialsAndAssumeRole(omatConfig)
 		if err != nil {
-			if strings.HasPrefix(err.Error(), "ParameterNotFound") {
-				util.Fatalf("Could not find role parameter: %s\n", roleParamName)
-			} else {
-				util.Fatal(err)
-			}
+			util.Fatal(err)
 		}
 
-		arn := aws.StringValue(roleParam.Parameter.Value)
-		if arn != "" {
-			fmt.Printf("Using ARN: %s (from %s)\n", *roleParam.Parameter.Value, roleParamName)
-		} else {
-			util.Fatalf("SSM paramater '%s' was empty.\n", roleParamName)
-		}
-
-		assumedSess := session.Must(session.NewSession())
-		creds := stscreds.NewCredentials(assumedSess, arn)
-		ec2Client := ec2.New(assumedSess, &aws.Config{Credentials: creds})
+		ec2Client := ec2.New(session, cfg)
 
 		imageList, err := ec2Client.DescribeImages(&ec2.DescribeImagesInput{
 			Owners: []*string{aws.String("self")},
