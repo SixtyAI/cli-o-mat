@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func showImages(images []*ec2.Image) {
+func showImages(shortHashes bool, images []*ec2.Image) {
 	// N.B. It's a bit rude to modify our parameter in-place in a function the caller expects to just
 	// show things, but since we're not reusing the data structure yet, I'm not gonna add the overhead
 	// of the slice copy.
@@ -20,13 +20,32 @@ func showImages(images []*ec2.Image) {
 		return aws.StringValue(images[i].Name) < aws.StringValue(images[j].Name)
 	})
 
-	const imagesFormat = "%-21s %-6s %-9s %s\n"
+	hashLen := 40
+	if shortHashes {
+		hashLen = 7
+	}
 
-	fmt.Printf(imagesFormat, "ID", "Arch", "State", "Name")
+	imagesFormat := fmt.Sprintf("%%-21s %%-6s %%-9s %%-%ds %%s\n", hashLen)
+
+	fmt.Printf(imagesFormat, "ID", "Arch", "State", "Commit", "Name")
 
 	for _, image := range images {
+		var commit string
+
+		for _, value := range image.Tags {
+			if aws.StringValue(value.Key) == "BuildCommit" {
+				commit = aws.StringValue(value.Value)
+
+				if shortHashes {
+					commit = commit[0:7]
+				}
+
+				break
+			}
+		}
+
 		fmt.Printf(imagesFormat, aws.StringValue(image.ImageId), aws.StringValue(image.Architecture),
-			aws.StringValue(image.State), aws.StringValue(image.Name))
+			aws.StringValue(image.State), commit, aws.StringValue(image.Name))
 	}
 }
 
@@ -55,11 +74,18 @@ var imagesCmd = &cobra.Command{
 			util.Fatal(err)
 		}
 
-		showImages(imageList.Images)
+		fmt.Printf("\n\n\nGOT TAGS: %+v\n\n\n", imageList.Images[0].Tags)
+
+		showImages(shortHashes, imageList.Images)
 	},
 }
+
+// nolint: gochecknoglobals
+var shortHashes bool
 
 // nolint: gochecknoinits
 func init() {
 	rootCmd.AddCommand(imagesCmd)
+
+	imagesCmd.Flags().BoolVarP(&shortHashes, "short", "", false, "Shorten git commit SHAs")
 }
