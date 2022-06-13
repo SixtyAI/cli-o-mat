@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"sort"
 	"strings"
 
@@ -42,8 +41,7 @@ var imagesCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		omatConfig, err := loadOmatConfig()
 		if err != nil {
-			fmt.Printf("%v\n", err)
-			os.Exit(1)
+			util.Fatal(err)
 		}
 
 		paramPrefix := omatConfig.Prefix()
