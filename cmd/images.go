@@ -19,7 +19,7 @@ func showImages(shortHashes bool, images []*ec2.Image) {
 
 	tableData := make([][]string, len(images))
 
-	for i, image := range images {
+	for idx, image := range images {
 		var commit string
 
 		for _, tag := range image.Tags {
@@ -34,7 +34,7 @@ func showImages(shortHashes bool, images []*ec2.Image) {
 			}
 		}
 
-		tableData[i] = []string{
+		tableData[idx] = []string{
 			aws.StringValue(image.ImageId),
 			aws.StringValue(image.Architecture),
 			aws.StringValue(image.State),

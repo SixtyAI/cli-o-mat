@@ -30,7 +30,8 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&environment, "env", "", "", "Which logical environment to operate in")
 	rootCmd.PersistentFlags().StringVarP(&deployService, "deploy-service", "", "", "The name of the deploy_o_mat service")
 	rootCmd.PersistentFlags().StringVarP(&buildAccountSlug, "build-slug", "", "", "The build-account slug (e.g. ci-cd)")
-	rootCmd.PersistentFlags().StringVarP(&deployAccountSlug, "deploy-slug", "", "", "The deploy-account slug (e.g. workload)")
+	rootCmd.PersistentFlags().StringVarP(&deployAccountSlug, "deploy-slug", "", "",
+		"The deploy-account slug (e.g. workload)")
 }
 
 // nolint: gochecknoglobals

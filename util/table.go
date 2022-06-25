@@ -19,7 +19,8 @@ func makeFormatString(tableConfig *Table, columnWidths []int) string {
 		if !column.RightAlign {
 			width = -width
 		}
-		formatString = formatString + fmt.Sprintf(" %%%ds", width)
+
+		formatString += fmt.Sprintf(" %%%ds", width)
 	}
 
 	return formatString[1:] + "\n"
@@ -44,7 +45,6 @@ func computeColumnWidths(tableConfig *Table, tableData [][]string) []int {
 	return columnWidths
 }
 
-// TODO: Add some sorting functionality...
 func (tableConfig *Table) Show(tableData [][]string) {
 	columnWidths := computeColumnWidths(tableConfig, tableData)
 	formatString := makeFormatString(tableConfig, columnWidths)
@@ -61,6 +61,7 @@ func (tableConfig *Table) Show(tableData [][]string) {
 		for i, col := range row {
 			anyRow[i] = col
 		}
+
 		fmt.Printf(formatString, anyRow...)
 	}
 }

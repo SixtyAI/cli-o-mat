@@ -12,36 +12,47 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func getTagValues(tags []*ec2.Tag) (string, string, string, string) {
+	var (
+		application           string
+		service               string
+		asg                   string
+		launchTemplateVersion string
+	)
+
+	for _, tag := range tags {
+		key := aws.StringValue(tag.Key)
+		val := aws.StringValue(tag.Value)
+
+		switch key {
+		case "Application":
+			application = val
+		case "Service":
+			service = val
+		case "aws:autoscaling:groupName":
+			asg = val
+		case "aws:ec2launchtemplate:version":
+			launchTemplateVersion = val
+		}
+	}
+
+	return application, service, asg, launchTemplateVersion
+}
+
 func showHosts(hosts []*ec2.Instance) {
 	tableData := make([][]string, len(hosts))
 
-	for i, host := range hosts {
-		var application string
-		var service string
-		var asg string
-		var launchTemplateVersion string
+	for idx, host := range hosts {
+		application, service, asg, launchTemplateVersion := getTagValues(host.Tags)
 
-		for _, tag := range host.Tags {
-			key := aws.StringValue(tag.Key)
-			val := aws.StringValue(tag.Value)
-			if key == "Application" {
-				application = val
-			} else if key == "Service" {
-				service = val
-			} else if key == "aws:autoscaling:groupName" {
-				asg = val
-			} else if key == "aws:ec2launchtemplate:version" {
-				launchTemplateVersion = val
-			}
-		}
+		var stateName string
 
 		state := host.State
-		var stateName string
 		if state != nil {
 			stateName = aws.StringValue(state.Name)
 		}
 
-		tableData[i] = []string{
+		tableData[idx] = []string{
 			aws.StringValue(host.InstanceId), host.LaunchTime.Format(time.RFC3339),
 			aws.StringValue(host.InstanceType), aws.StringValue(host.Architecture),
 			aws.StringValue(host.ImageId), stateName, aws.StringValue(host.PublicIpAddress), application,
