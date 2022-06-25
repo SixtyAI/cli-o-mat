@@ -74,8 +74,6 @@ var imagesCmd = &cobra.Command{
 			util.Fatal(err)
 		}
 
-		fmt.Printf("\n\n\nGOT TAGS: %+v\n\n\n", imageList.Images[0].Tags)
-
 		showImages(shortHashes, imageList.Images)
 	},
 }
