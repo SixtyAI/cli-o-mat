@@ -19,6 +19,7 @@ type Omat struct {
 	Environment        string `yaml:"environment"`
 	DeployService      string `yaml:"deployService"`
 	BuildAccountSlug   string `yaml:"buildAccountSlug"`
+	DeployAccountSlug  string `yaml:"deployAccountSlug"`
 }
 
 func NewOmat() *Omat {
@@ -28,6 +29,7 @@ func NewOmat() *Omat {
 		Environment:        "development",
 		DeployService:      "deployomat",
 		BuildAccountSlug:   "ci-cd",
+		DeployAccountSlug:  "workload",
 	}
 }
 
@@ -81,6 +83,10 @@ func (omat *Omat) loadConfigFromEnv() {
 
 	if buildAccountSlug, wasSet := os.LookupEnv("OMAT_BUILD_ACCOUNT_SLUG"); wasSet {
 		omat.BuildAccountSlug = buildAccountSlug
+	}
+
+	if deployAccountSlug, wasSet := os.LookupEnv("OMAT_DEPLOY_ACCOUNT_SLUG"); wasSet {
+		omat.DeployAccountSlug = deployAccountSlug
 	}
 }
 

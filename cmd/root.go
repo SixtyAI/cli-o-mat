@@ -30,14 +30,16 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&environment, "env", "", "", "Which logical environment to operate in")
 	rootCmd.PersistentFlags().StringVarP(&deployService, "deploy-service", "", "", "The name of the deploy_o_mat service")
 	rootCmd.PersistentFlags().StringVarP(&buildAccountSlug, "build-slug", "", "", "The build-account slug (e.g. ci-cd)")
+	rootCmd.PersistentFlags().StringVarP(&deployAccountSlug, "deploy-slug", "", "", "The deploy-account slug (e.g. workload)")
 }
 
 // nolint: gochecknoglobals
 var (
-	region           string
-	environment      string
-	deployService    string
-	buildAccountSlug string
+	region            string
+	environment       string
+	deployService     string
+	buildAccountSlug  string
+	deployAccountSlug string
 )
 
 func loadOmatConfig() (*config.Omat, error) {
@@ -61,6 +63,10 @@ func loadOmatConfig() (*config.Omat, error) {
 
 	if buildAccountSlug != "" {
 		omat.BuildAccountSlug = buildAccountSlug
+	}
+
+	if deployAccountSlug != "" {
+		omat.DeployAccountSlug = deployAccountSlug
 	}
 
 	omat.InitCredentials()
