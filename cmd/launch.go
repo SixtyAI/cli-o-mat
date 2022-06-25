@@ -87,24 +87,9 @@ var launchTemplatesCmd = &cobra.Command{
 		}
 
 		ec2Client := ec2.New(details.Session, details.Config)
-		nextToken := aws.String("")
-		templates := []*ec2.LaunchTemplate{}
-
-		for {
-			resp, err := ec2Client.DescribeLaunchTemplates(&ec2.DescribeLaunchTemplatesInput{
-				NextToken: nextToken,
-			})
-			if err != nil {
-				util.Fatal(err)
-			}
-
-			templates = append(templates, resp.LaunchTemplates...)
-
-			if resp.NextToken == nil {
-				break
-			}
-
-			nextToken = resp.NextToken
+		templates, err := awsutil.FetchLaunchTemplates(ec2Client)
+		if err != nil {
+			util.Fatal(err)
 		}
 
 		showLaunchTemplates(templates)
