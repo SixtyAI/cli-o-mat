@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func getTagValues(tags []*ec2.Tag) (string, string, string, string) {
+func getHostTagValues(tags []*ec2.Tag) (string, string, string, string) {
 	var (
 		application           string
 		service               string
@@ -43,7 +43,7 @@ func showHosts(hosts []*ec2.Instance) {
 	tableData := make([][]string, len(hosts))
 
 	for idx, host := range hosts {
-		application, service, asg, launchTemplateVersion := getTagValues(host.Tags)
+		application, service, asg, launchTemplateVersion := getHostTagValues(host.Tags)
 
 		var stateName string
 
