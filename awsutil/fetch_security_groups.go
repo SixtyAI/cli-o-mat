@@ -3,7 +3,7 @@ package awsutil
 import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/pkg/errors"
+	"github.com/cockroachdb/errors"
 )
 
 func FetchSecurityGroups(ec2Client *ec2.EC2, groupIDs []string) ([]*ec2.SecurityGroup, error) {

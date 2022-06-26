@@ -5,7 +5,7 @@ import (
 
 	"github.com/FasterBetter/cli-o-mat/config"
 
-	"github.com/pkg/errors"
+	"github.com/cockroachdb/errors"
 	"github.com/spf13/cobra"
 )
 
