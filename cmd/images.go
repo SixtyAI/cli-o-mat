@@ -26,7 +26,7 @@ func showImages(shortHashes bool, images []*ec2.Image) {
 			if aws.StringValue(tag.Key) == "BuildCommit" {
 				commit = aws.StringValue(tag.Value)
 
-				if shortHashes {
+				if shortHashes && commit != "" {
 					commit = commit[0:hashLen]
 				}
 
