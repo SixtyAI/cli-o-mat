@@ -16,9 +16,25 @@ import (
 
 var errNoLaunchTemplate = fmt.Errorf("no launch template versions found")
 
-func showLaunchTemplateVersions(templates []*ec2.LaunchTemplateVersion, groupMap map[string]string,
+func defaultToString(value *bool) string {
+	var isDefault string
+	if aws.BoolValue(value) {
+		isDefault = "yes"
+	} else {
+		isDefault = "" // Blank so the `yes` value stands out more.
+	}
+
+	return isDefault
+}
+
+func showLaunchTemplateVersions(shortHashes bool, templates []*ec2.LaunchTemplateVersion, groupMap map[string]string,
 	imageMap map[string]string,
 ) {
+	hashLen := 40
+	if shortHashes {
+		hashLen = 7
+	}
+
 	sort.Slice(templates, func(i, j int) bool {
 		return aws.Int64Value(templates[i].VersionNumber) < aws.Int64Value(templates[j].VersionNumber)
 	})
@@ -26,34 +42,25 @@ func showLaunchTemplateVersions(templates []*ec2.LaunchTemplateVersion, groupMap
 	tableData := make([][]string, len(templates))
 
 	for idx, version := range templates {
-		var isDefault string
-		if aws.BoolValue(version.DefaultVersion) {
-			isDefault = "yes"
-		} else {
-			isDefault = "" // Blank so the `yes` value stands out more.
-		}
-
 		data := version.LaunchTemplateData
 		if data == nil {
 			data = &ec2.ResponseLaunchTemplateData{}
 		}
 
-		securityGroupIds := ""
-		for _, group := range version.LaunchTemplateData.SecurityGroupIds {
-			securityGroupIds += ", " + groupMap[aws.StringValue(group)]
-		}
+		securityGroupIds := stringifySecurityGroups(version, groupMap)
 
-		if len(securityGroupIds) > 0 {
-			securityGroupIds = securityGroupIds[2:]
+		commit := imageMap[aws.StringValue(data.ImageId)]
+		if shortHashes && commit != "" {
+			commit = commit[0:hashLen]
 		}
 
 		tableData[idx] = []string{
 			fmt.Sprintf("%d", aws.Int64Value(version.VersionNumber)),
-			isDefault,
+			defaultToString(version.DefaultVersion),
 			version.CreateTime.Format(time.RFC3339),
 			aws.StringValue(data.InstanceType),
 			aws.StringValue(data.ImageId),
-			imageMap[aws.StringValue(data.ImageId)],
+			commit,
 			aws.StringValue(data.KeyName),
 			securityGroupIds,
 		}
@@ -73,6 +80,19 @@ func showLaunchTemplateVersions(templates []*ec2.LaunchTemplateVersion, groupMap
 	}
 
 	tableConfig.Show(tableData)
+}
+
+func stringifySecurityGroups(version *ec2.LaunchTemplateVersion, groupMap map[string]string) string {
+	securityGroupIds := ""
+	for _, group := range version.LaunchTemplateData.SecurityGroupIds {
+		securityGroupIds += ", " + groupMap[aws.StringValue(group)]
+	}
+
+	if len(securityGroupIds) > 0 {
+		securityGroupIds = securityGroupIds[2:]
+	}
+
+	return securityGroupIds
 }
 
 func buildSecurityGroupMapping(ec2Client *ec2.EC2, versions []*ec2.LaunchTemplateVersion) (map[string]string, error) {
@@ -178,11 +198,16 @@ var launchTemplateCmd = &cobra.Command{
 			util.Fatal(err)
 		}
 
-		showLaunchTemplateVersions(versions, groupMap, imageMap)
+		showLaunchTemplateVersions(templateShortHashes, versions, groupMap, imageMap)
 	},
 }
+
+// nolint: gochecknoglobals
+var templateShortHashes bool
 
 // nolint: gochecknoinits
 func init() {
 	rootCmd.AddCommand(launchTemplateCmd)
+
+	launchTemplateCmd.Flags().BoolVarP(&templateShortHashes, "short", "", false, "Shorten git commit SHAs")
 }
