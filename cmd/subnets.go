@@ -43,6 +43,7 @@ func getSubnetTagValues(tags []*ec2.Tag) (string, string, string, string) {
 func showSubnets(subnets []*ec2.Subnet) {
 	tableData := make([][]string, len(subnets))
 
+	// nolint: varnamelen
 	sort.SliceStable(subnets, func(i, j int) bool {
 		switch strings.Compare(aws.StringValue(subnets[i].VpcId), aws.StringValue(subnets[j].VpcId)) {
 		case -1:

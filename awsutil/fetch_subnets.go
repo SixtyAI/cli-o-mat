@@ -7,6 +7,7 @@ import (
 
 func FetchSubnets(ec2Client *ec2.EC2) ([]*ec2.Subnet, error) {
 	var nextToken *string
+
 	subnets := []*ec2.Subnet{}
 
 	for {
