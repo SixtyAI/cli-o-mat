@@ -54,10 +54,18 @@ func showHosts(hosts []*ec2.Instance) {
 		}
 
 		tableData[idx] = []string{
-			aws.StringValue(host.InstanceId), host.LaunchTime.Format(time.RFC3339),
-			aws.StringValue(host.InstanceType), aws.StringValue(host.Architecture),
-			aws.StringValue(host.ImageId), stateName, aws.StringValue(host.PublicIpAddress), application,
-			service, launchTemplateVersion, asg, aws.StringValue(host.KeyName),
+			aws.StringValue(host.InstanceId),
+			host.LaunchTime.Format(time.RFC3339),
+			aws.StringValue(host.InstanceType),
+			aws.StringValue(host.Architecture),
+			aws.StringValue(host.ImageId),
+			stateName,
+			aws.StringValue(host.PublicIpAddress),
+			application,
+			service,
+			launchTemplateVersion,
+			asg,
+			aws.StringValue(host.KeyName),
 		}
 	}
 
