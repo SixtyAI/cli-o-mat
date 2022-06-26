@@ -16,17 +16,6 @@ import (
 
 var errNoLaunchTemplate = fmt.Errorf("no launch template versions found")
 
-func defaultToString(value *bool) string {
-	var isDefault string
-	if aws.BoolValue(value) {
-		isDefault = "yes"
-	} else {
-		isDefault = "" // Blank so the `yes` value stands out more.
-	}
-
-	return isDefault
-}
-
 func showLaunchTemplateVersions(shortHashes bool, templates []*ec2.LaunchTemplateVersion, groupMap map[string]string,
 	imageMap map[string]string,
 ) {
@@ -56,7 +45,7 @@ func showLaunchTemplateVersions(shortHashes bool, templates []*ec2.LaunchTemplat
 
 		tableData[idx] = []string{
 			fmt.Sprintf("%d", aws.Int64Value(version.VersionNumber)),
-			defaultToString(version.DefaultVersion),
+			awsutil.DefaultToString(version.DefaultVersion),
 			version.CreateTime.Format(time.RFC3339),
 			aws.StringValue(data.InstanceType),
 			aws.StringValue(data.ImageId),
