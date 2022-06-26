@@ -10,12 +10,15 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
 var errNoLaunchTemplate = fmt.Errorf("no launch template versions found")
 
-func showLaunchTemplateVersions(templates []*ec2.LaunchTemplateVersion, groupMap map[string]string) {
+func showLaunchTemplateVersions(templates []*ec2.LaunchTemplateVersion, groupMap map[string]string,
+	imageMap map[string]string,
+) {
 	sort.Slice(templates, func(i, j int) bool {
 		return aws.Int64Value(templates[i].VersionNumber) < aws.Int64Value(templates[j].VersionNumber)
 	})
@@ -50,6 +53,7 @@ func showLaunchTemplateVersions(templates []*ec2.LaunchTemplateVersion, groupMap
 			version.CreateTime.Format(time.RFC3339),
 			aws.StringValue(data.InstanceType),
 			aws.StringValue(data.ImageId),
+			imageMap[aws.StringValue(data.ImageId)],
 			aws.StringValue(data.KeyName),
 			securityGroupIds,
 		}
@@ -62,12 +66,71 @@ func showLaunchTemplateVersions(templates []*ec2.LaunchTemplateVersion, groupMap
 			{Name: "Created"},
 			{Name: "Type"},
 			{Name: "Image"},
+			{Name: "Commit"},
 			{Name: "Keypair"},
 			{Name: "Security Groups"},
 		},
 	}
 
 	tableConfig.Show(tableData)
+}
+
+func buildSecurityGroupMapping(ec2Client *ec2.EC2, versions []*ec2.LaunchTemplateVersion) (map[string]string, error) {
+	groupMap := map[string]string{}
+
+	for _, version := range versions {
+		for _, groupID := range version.LaunchTemplateData.SecurityGroupIds {
+			groupMap[aws.StringValue(groupID)] = ""
+		}
+	}
+
+	groupIDs := make([]string, 0, len(groupMap))
+	for groupID := range groupMap {
+		groupIDs = append(groupIDs, groupID)
+	}
+
+	groups, err := awsutil.FetchSecurityGroups(ec2Client, groupIDs)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	for _, group := range groups {
+		groupMap[aws.StringValue(group.GroupId)] = aws.StringValue(group.GroupName)
+	}
+
+	return groupMap, nil
+}
+
+func buildImageMapping(ec2Client *ec2.EC2) (map[string]string, error) {
+	imageMap := map[string]string{}
+
+	// N.B. I'd _like_ to just request the image IDs we care about, but the ImageId parameter here is... not behaving
+	// nicely.  Specifically, if _any_ of the images are not found, the API will return an error.  Rather than try to
+	// sort out what does/doesn't exist by parsing the error, we'll just request all of them.
+	images, err := ec2Client.DescribeImages(&ec2.DescribeImagesInput{
+		// ImageIds:          aws.StringSlice(imageIDs),
+		IncludeDeprecated: aws.Bool(true),
+		Owners:            []*string{aws.String("self")},
+	})
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	for _, image := range images.Images {
+		var commit string
+
+		for _, tag := range image.Tags {
+			if aws.StringValue(tag.Key) == "BuildCommit" {
+				commit = aws.StringValue(tag.Value)
+
+				break
+			}
+		}
+
+		imageMap[aws.StringValue(image.ImageId)] = commit
+	}
+
+	return imageMap, nil
 }
 
 // nolint: gochecknoglobals
@@ -82,14 +145,21 @@ var launchTemplateCmd = &cobra.Command{
 			util.Fatal(err)
 		}
 
-		details, err := awsutil.FindAndAssumeAdminRole(omat.DeployAccountSlug, omat)
+		deployAcctDetails, err := awsutil.FindAndAssumeAdminRole(omat.DeployAccountSlug, omat)
 		if err != nil {
 			util.Fatal(err)
 		}
 
-		ec2Client := ec2.New(details.Session, details.Config)
+		deployAcctEC2Client := ec2.New(deployAcctDetails.Session, deployAcctDetails.Config)
 
-		versions, err := awsutil.FetchLaunchTemplateVersions(ec2Client, args[0], nil)
+		buildAcctDetails, err := awsutil.FindAndAssumeAdminRole(omat.BuildAccountSlug, omat)
+		if err != nil {
+			util.Fatal(err)
+		}
+
+		buildAcctEC2Client := ec2.New(buildAcctDetails.Session, buildAcctDetails.Config)
+
+		versions, err := awsutil.FetchLaunchTemplateVersions(deployAcctEC2Client, args[0], nil)
 		if err != nil {
 			util.Fatal(err)
 		}
@@ -98,29 +168,17 @@ var launchTemplateCmd = &cobra.Command{
 			util.Fatal(errNoLaunchTemplate)
 		}
 
-		groupMap := map[string]string{}
-		for _, version := range versions {
-			for _, groupID := range version.LaunchTemplateData.SecurityGroupIds {
-				groupMap[aws.StringValue(groupID)] = ""
-			}
-		}
-
-		groupIDs := make([]string, 0, len(groupMap))
-		for groupID := range groupMap {
-			groupIDs = append(groupIDs, groupID)
-		}
-
-		groups, err := awsutil.FetchSecurityGroups(ec2Client, groupIDs)
+		groupMap, err := buildSecurityGroupMapping(deployAcctEC2Client, versions)
 		if err != nil {
 			util.Fatal(err)
 		}
 
-		for _, group := range groups {
-			groupMap[aws.StringValue(group.GroupId)] = aws.StringValue(group.GroupName)
+		imageMap, err := buildImageMapping(buildAcctEC2Client)
+		if err != nil {
+			util.Fatal(err)
 		}
 
-		fmt.Printf("%+v\n", groups)
-		showLaunchTemplateVersions(versions, groupMap)
+		showLaunchTemplateVersions(versions, groupMap, imageMap)
 	},
 }
 
