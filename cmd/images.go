@@ -85,16 +85,16 @@ var imagesCmd = &cobra.Command{
 			util.Fatal(err)
 		}
 
-		showImages(shortHashes, imageList.Images)
+		showImages(imagesShortHashes, imageList.Images)
 	},
 }
 
 // nolint: gochecknoglobals
-var shortHashes bool
+var imagesShortHashes bool
 
 // nolint: gochecknoinits
 func init() {
 	rootCmd.AddCommand(imagesCmd)
 
-	imagesCmd.Flags().BoolVarP(&shortHashes, "short", "", false, "Shorten git commit SHAs")
+	imagesCmd.Flags().BoolVarP(&imagesShortHashes, "short", "", false, "Shorten git commit SHAs")
 }
