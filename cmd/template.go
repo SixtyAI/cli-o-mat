@@ -87,7 +87,7 @@ var launchTemplateCmd = &cobra.Command{
 
 		ec2Client := ec2.New(details.Session, details.Config)
 
-		versions, err := awsutil.FetchLaunchTemplateVersions(ec2Client, args[0])
+		versions, err := awsutil.FetchLaunchTemplateVersions(ec2Client, args[0], nil)
 		if err != nil {
 			util.Fatal(err)
 		}
