@@ -58,7 +58,6 @@ func showSubnets(subnets []*ec2.Subnet) {
 	for idx, subnet := range subnets {
 		application, service, netType, name := getSubnetTagValues(subnet.Tags)
 
-		// TODO: Tags...
 		tableData[idx] = []string{
 			aws.StringValue(subnet.VpcId),
 			aws.StringValue(subnet.SubnetId),
