@@ -18,7 +18,7 @@ func FetchSecurityGroups(ec2Client *ec2.EC2, groupIDs []string) ([]*ec2.Security
 			NextToken: nextToken,
 		})
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to describe launch template versions")
+			return nil, errors.WithStack(err)
 		}
 
 		groups = append(groups, resp.SecurityGroups...)

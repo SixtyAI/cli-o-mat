@@ -21,7 +21,7 @@ func FetchLaunchTemplates(ec2Client *ec2.EC2, name *string) ([]*ec2.LaunchTempla
 			NextToken:           nextToken,
 		})
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to describe launch templates")
+			return nil, errors.WithStack(err)
 		}
 
 		templates = append(templates, resp.LaunchTemplates...)
