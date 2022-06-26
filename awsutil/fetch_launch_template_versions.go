@@ -25,7 +25,7 @@ func FetchLaunchTemplateVersions(ec2Client *ec2.EC2, name string,
 			Versions:           desiredVersions,
 		})
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to describe launch template versions")
+			return nil, errors.WithStack(err)
 		}
 
 		versions = append(versions, resp.LaunchTemplateVersions...)
