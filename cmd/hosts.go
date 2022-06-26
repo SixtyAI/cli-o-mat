@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/FasterBetter/cli-o-mat/awsutil"
+	"github.com/FasterBetter/cli-o-mat/config"
 	"github.com/FasterBetter/cli-o-mat/util"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -25,13 +26,13 @@ func getHostTagValues(tags []*ec2.Tag) (string, string, string, string) {
 		val := aws.StringValue(tag.Value)
 
 		switch key {
-		case "Application":
+		case config.AppTag:
 			application = val
-		case "Service":
+		case config.ServiceTag:
 			service = val
-		case "aws:autoscaling:groupName":
+		case config.ASGTag:
 			asg = val
-		case "aws:ec2launchtemplate:version":
+		case config.LTVersionTag:
 			launchTemplateVersion = val
 		}
 	}

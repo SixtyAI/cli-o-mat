@@ -4,6 +4,7 @@ import (
 	"sort"
 
 	"github.com/FasterBetter/cli-o-mat/awsutil"
+	"github.com/FasterBetter/cli-o-mat/config"
 	"github.com/FasterBetter/cli-o-mat/util"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -23,7 +24,7 @@ func showImages(shortHashes bool, images []*ec2.Image) {
 		var commit string
 
 		for _, tag := range image.Tags {
-			if aws.StringValue(tag.Key) == "BuildCommit" {
+			if aws.StringValue(tag.Key) == config.CommitTag {
 				commit = aws.StringValue(tag.Value)
 
 				if shortHashes && commit != "" {

@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/FasterBetter/cli-o-mat/awsutil"
+	"github.com/FasterBetter/cli-o-mat/config"
 	"github.com/FasterBetter/cli-o-mat/util"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -25,13 +26,13 @@ func getSubnetTagValues(tags []*ec2.Tag) (string, string, string, string) {
 		val := aws.StringValue(tag.Value)
 
 		switch key {
-		case "Application":
+		case config.AppTag:
 			application = val
-		case "Service":
+		case config.ServiceTag:
 			service = val
-		case "Type":
+		case config.TypeTag:
 			netType = val
-		case "Name":
+		case config.NameTag:
 			name = val
 		}
 	}

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/FasterBetter/cli-o-mat/awsutil"
+	"github.com/FasterBetter/cli-o-mat/config"
 	"github.com/FasterBetter/cli-o-mat/util"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -24,9 +25,9 @@ func getLaunchTemplateTagValues(tags []*ec2.Tag) (string, string) {
 		val := aws.StringValue(tag.Value)
 
 		switch key {
-		case "Application":
+		case config.AppTag:
 			application = val
-		case "Service":
+		case config.ServiceTag:
 			service = val
 		}
 	}

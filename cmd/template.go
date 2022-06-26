@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/FasterBetter/cli-o-mat/awsutil"
+	"github.com/FasterBetter/cli-o-mat/config"
 	"github.com/FasterBetter/cli-o-mat/util"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -129,7 +130,7 @@ func buildImageMapping(ec2Client *ec2.EC2) (map[string]string, error) {
 		var commit string
 
 		for _, tag := range image.Tags {
-			if aws.StringValue(tag.Key) == "BuildCommit" {
+			if aws.StringValue(tag.Key) == config.CommitTag {
 				commit = aws.StringValue(tag.Value)
 
 				break
