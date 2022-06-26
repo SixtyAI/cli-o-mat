@@ -49,6 +49,7 @@ func showLaunchTemplateVersions(templates []*ec2.LaunchTemplateVersion, groupMap
 			isDefault,
 			version.CreateTime.Format(time.RFC3339),
 			aws.StringValue(data.InstanceType),
+			aws.StringValue(data.ImageId),
 			aws.StringValue(data.KeyName),
 			securityGroupIds,
 		}
@@ -60,6 +61,7 @@ func showLaunchTemplateVersions(templates []*ec2.LaunchTemplateVersion, groupMap
 			{Name: "Default?"},
 			{Name: "Created"},
 			{Name: "Type"},
+			{Name: "Image"},
 			{Name: "Keypair"},
 			{Name: "Security Groups"},
 		},
