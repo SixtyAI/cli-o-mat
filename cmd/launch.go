@@ -14,7 +14,6 @@ import (
 )
 
 var (
-	errNoPublicSubnet        = errors.New("no public subnet found")
 	errCouldntLaunchInstance = errors.New("unable to launch instance")
 )
 
@@ -24,7 +23,7 @@ var launchCmd = &cobra.Command{
 	Short: "Launch an EC2 instance from a launch template.",
 	Long: `Launch an EC2 instance from a launch template.
 
-If you don't specify a subnet-id, the first subnet with Type=Public will be used.`,
+If you don't specify a subnet-id, the default subnet from the launch template will be used.`,
 	Args: cobra.RangeArgs(2, 3),
 	Run: func(cmd *cobra.Command, args []string) {
 		omat, err := loadOmatConfig()
@@ -41,28 +40,9 @@ If you don't specify a subnet-id, the first subnet with Type=Public will be used
 		name := args[0]
 		keypair := args[1]
 
-		var subnetID string
+		var subnetID *string
 		if len(args) == 3 {
-			subnetID = args[2]
-		} else {
-			var subnets []*ec2.Subnet
-			subnets, err = awsutil.FetchSubnets(ec2Client)
-			if err != nil {
-				util.Fatal(err)
-			}
-			for _, subnet := range subnets {
-				for _, tag := range subnet.Tags {
-					if aws.StringValue(tag.Key) == "Type" && aws.StringValue(tag.Value) == "Public" {
-						subnetID = aws.StringValue(subnet.SubnetId)
-
-						break
-					}
-				}
-			}
-
-			if subnetID == "" {
-				util.Fatal(errNoPublicSubnet)
-			}
+			subnetID = aws.String(args[2])
 		}
 
 		if launchVersion == "" {
@@ -85,7 +65,7 @@ If you don't specify a subnet-id, the first subnet with Type=Public will be used
 
 			MinCount: aws.Int64(1),
 			MaxCount: aws.Int64(1),
-			SubnetId: aws.String(subnetID),
+			SubnetId: subnetID,
 		})
 		if err != nil {
 			util.Fatal(err)
