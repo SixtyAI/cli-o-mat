@@ -13,9 +13,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	errCouldntLaunchInstance = errors.New("unable to launch instance")
-)
+var errCouldntLaunchInstance = errors.New("unable to launch instance")
 
 // nolint: gochecknoglobals,gomnd
 var launchCmd = &cobra.Command{
