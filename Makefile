@@ -36,14 +36,20 @@ generate: version ## Generate any code, as needed.
 test: generate ## Run test suite.
 	go test -race -coverprofile coverage.txt ./...
 
-compile: generate ## Compile code.
+just_compile:
 	GOOS=${GOOS} GOARCH=${GOARCH} go build -o "${APP_NAME}.${GOARCH}" main.go
+
+compile: generate just_compile ## Compile code.
 
 build: test generate compile ## Run tests, generate code, compile code.
 
-dist: version ## Compile for all architectures, and produce a fat binary.
-	GOOS=darwin GOARCH=amd64 make compile
-	GOOS=darwin GOARCH=arm64 make compile
+build_amd64: version generate
+	GOOS=darwin GOARCH=amd64 make just_compile
+
+build_arm64: version generate
+	GOOS=darwin GOARCH=arm64 make just_compile
+
+dist: build_amd64 build_arm64 ## Compile for all architectures, and produce a fat binary.
 	lipo -create -arch arm64 omat.arm64 -arch x86_64 omat.amd64 -output omat
 
 fmt: ## Tidy code.
