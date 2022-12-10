@@ -41,11 +41,12 @@ func showImages(shortHashes bool, images []*ec2.Image) {
 			aws.StringValue(image.State),
 			commit,
 			aws.StringValue(image.Name),
+			aws.StringValue(image.CreationDate),
 		}
 	}
 
 	sort.Slice(tableData, func(i, j int) bool {
-		return tableData[i][4] < tableData[j][4]
+		return tableData[i][5] < tableData[j][5]
 	})
 
 	tableConfig := &util.Table{
@@ -55,6 +56,7 @@ func showImages(shortHashes bool, images []*ec2.Image) {
 			{Name: "State"},
 			{Name: "Commit"},
 			{Name: "Name"},
+			{Name: "Created"},
 		},
 	}
 
