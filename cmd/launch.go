@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/FasterBetter/cli-o-mat/awsutil"
@@ -35,7 +36,7 @@ If you don't specify a subnet-id, the default subnet from the launch template wi
 		}
 
 		ec2Client := ec2.New(details.Session, details.Config)
-		name := args[0]
+		namePrefix := args[0]
 		keypair := args[1]
 
 		var subnetID *string
@@ -51,6 +52,34 @@ If you don't specify a subnet-id, the default subnet from the launch template wi
 		if launchType != "" {
 			instanceType = aws.String(launchType)
 		}
+
+		templates, err := awsutil.FetchLaunchTemplates(ec2Client, nil)
+		candidates := make([]string, 0)
+		for _, template := range templates {
+			templateName := aws.StringValue(template.LaunchTemplateName)
+			if strings.HasPrefix(templateName, namePrefix) {
+				candidates = append(candidates, templateName)
+			}
+		}
+
+		if len(candidates) == 0 {
+			fmt.Printf("Found the following launch templates, none of which match specified prefix:\n")
+			for _, template := range templates {
+				fmt.Printf("\t%s\n", aws.StringValue(template.LaunchTemplateName))
+			}
+			util.Fatal(errors.New("no matching launch templates found"))
+			// TODO: Show all.
+		} else if len(candidates) > 1 {
+			fmt.Printf("Found the following launch templates matching specified prefix:\n")
+			for _, candidate := range candidates {
+				fmt.Printf("\t%s\n", candidate)
+			}
+
+			util.Fatal(errors.New("multiple launch templates found"))
+			// TODO: Show candidates.
+		}
+		name := candidates[0]
+		fmt.Printf("Using launch template %s...\n", name)
 
 		resp, err := ec2Client.RunInstances(&ec2.RunInstancesInput{
 			LaunchTemplate: &ec2.LaunchTemplateSpecification{
