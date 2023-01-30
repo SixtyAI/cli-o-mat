@@ -66,11 +66,11 @@ lint: clean ## Run Go linters, without auto-fixing.
 			GOOS=${GOOS} GOARCH=${GOARCH} go vet -vettool=$$(which $$TOOL) ./...; \
 		done \
 	fi
-	GOOS=${GOOS} GOARCH=${GOARCH} golangci-lint run
+	GOOS=${GOOS} GOARCH=${GOARCH} golangci-lint run --config ./.golangci.yml
 	python3.9 -m chainjacking -gt $$GITHUB_TOKEN
 
 fix: ## Run transforms to simplify/correct known undesirable patterns of code.
-	golangci-lint run --fix
+	golangci-lint run --config ./.golangci.yml --fix
 
 cloc: ## Run cloc.
 	cloc .
