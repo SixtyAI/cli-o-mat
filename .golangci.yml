@@ -36,6 +36,7 @@ linters:
   - rowserrcheck
   - sqlclosecheck
   - wastedassign
+  - gocritic
   # - contextcheck
   # - nilerr
   # - noctx
