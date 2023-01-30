@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/FasterBetter/cli-o-mat/config"
-
 	"github.com/spf13/cobra"
+
+	"github.com/FasterBetter/cli-o-mat/config"
 )
 
 //nolint: gochecknoglobals

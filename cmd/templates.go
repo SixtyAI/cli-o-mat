@@ -5,13 +5,13 @@ import (
 	"sort"
 	"time"
 
-	"github.com/FasterBetter/cli-o-mat/awsutil"
-	"github.com/FasterBetter/cli-o-mat/config"
-	"github.com/FasterBetter/cli-o-mat/util"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/spf13/cobra"
+
+	"github.com/FasterBetter/cli-o-mat/awsutil"
+	"github.com/FasterBetter/cli-o-mat/config"
+	"github.com/FasterBetter/cli-o-mat/util"
 )
 
 func getLaunchTemplateTagValues(tags []*ec2.Tag) (string, string) {

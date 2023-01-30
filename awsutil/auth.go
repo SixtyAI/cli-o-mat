@@ -5,10 +5,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/FasterBetter/cli-o-mat/config"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ssm"
+
+	"github.com/FasterBetter/cli-o-mat/config"
 )
 
 func FindAndAssumeAdminRole(accountSlug string, omat *config.Omat) *config.SessionDetails {

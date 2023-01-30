@@ -5,13 +5,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/FasterBetter/cli-o-mat/awsutil"
-	"github.com/FasterBetter/cli-o-mat/util"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/cockroachdb/errors"
 	"github.com/spf13/cobra"
+
+	"github.com/FasterBetter/cli-o-mat/awsutil"
+	"github.com/FasterBetter/cli-o-mat/util"
 )
 
 var errCouldntLaunchInstance = errors.New("unable to launch instance")
