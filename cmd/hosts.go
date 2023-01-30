@@ -96,7 +96,7 @@ func showHosts(hosts []*ec2.Instance) {
 // nolint: gochecknoglobals
 var hostsCmd = &cobra.Command{
 	Use:   "hosts",
-	Short: "List AMIs.",
+	Short: "List EC2 instances.",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		omat := loadOmatConfig()
