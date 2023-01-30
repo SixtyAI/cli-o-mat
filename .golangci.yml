@@ -10,6 +10,11 @@ linters-settings:
       - standard
       - prefix(github.com/FasterBetter)
       - default
+  nolintlint:
+    allow-unused: false
+    allow-leading-space: true
+    require-explanation: false
+    require-specific: true
 
 linters:
   enable-all: true
