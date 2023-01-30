@@ -1,11 +1,11 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/FasterBetter/cli-o-mat/config"
 
-	"github.com/cockroachdb/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -43,11 +43,12 @@ var (
 	deployAccountSlug string
 )
 
-func loadOmatConfig() (*config.Omat, error) {
+func loadOmatConfig() *config.Omat {
 	omat := config.NewOmat()
 
 	if err := omat.LoadConfig(); err != nil {
-		return nil, errors.Wrap(err, "failed to load omat config")
+		fmt.Printf("Failed to load omat config")
+		os.Exit(1)
 	}
 
 	if region != "" {
@@ -72,5 +73,5 @@ func loadOmatConfig() (*config.Omat, error) {
 
 	omat.InitCredentials()
 
-	return omat, nil
+	return omat
 }

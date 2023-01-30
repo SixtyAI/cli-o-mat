@@ -69,15 +69,9 @@ var imagesCmd = &cobra.Command{
 	Short: "List AMIs.",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		omat, err := loadOmatConfig()
-		if err != nil {
-			util.Fatal(err)
-		}
+		omat := loadOmatConfig()
 
-		details, err := awsutil.FindAndAssumeAdminRole(omat.BuildAccountSlug, omat)
-		if err != nil {
-			util.Fatal(err)
-		}
+		details := awsutil.FindAndAssumeAdminRole(omat.BuildAccountSlug, omat)
 
 		ec2Client := ec2.New(details.Session, details.Config)
 

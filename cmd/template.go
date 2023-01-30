@@ -150,23 +150,12 @@ var launchTemplateCmd = &cobra.Command{
 	Long:  ``,
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		omat, err := loadOmatConfig()
-		if err != nil {
-			util.Fatal(err)
-		}
+		omat := loadOmatConfig()
 
-		deployAcctDetails, err := awsutil.FindAndAssumeAdminRole(omat.DeployAccountSlug, omat)
-		if err != nil {
-			util.Fatal(err)
-		}
-
+		deployAcctDetails := awsutil.FindAndAssumeAdminRole(omat.DeployAccountSlug, omat)
 		deployAcctEC2Client := ec2.New(deployAcctDetails.Session, deployAcctDetails.Config)
 
-		buildAcctDetails, err := awsutil.FindAndAssumeAdminRole(omat.BuildAccountSlug, omat)
-		if err != nil {
-			util.Fatal(err)
-		}
-
+		buildAcctDetails := awsutil.FindAndAssumeAdminRole(omat.BuildAccountSlug, omat)
 		buildAcctEC2Client := ec2.New(buildAcctDetails.Session, buildAcctDetails.Config)
 
 		versions, err := awsutil.FetchLaunchTemplateVersions(deployAcctEC2Client, args[0], nil)

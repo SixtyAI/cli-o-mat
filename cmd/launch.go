@@ -25,15 +25,9 @@ var launchCmd = &cobra.Command{
 If you don't specify a subnet-id, the default subnet from the launch template will be used.`,
 	Args: cobra.RangeArgs(2, 3),
 	Run: func(cmd *cobra.Command, args []string) {
-		omat, err := loadOmatConfig()
-		if err != nil {
-			util.Fatal(err)
-		}
+		omat := loadOmatConfig()
 
-		details, err := awsutil.FindAndAssumeAdminRole(omat.DeployAccountSlug, omat)
-		if err != nil {
-			util.Fatal(err)
-		}
+		details := awsutil.FindAndAssumeAdminRole(omat.DeployAccountSlug, omat)
 
 		ec2Client := ec2.New(details.Session, details.Config)
 		namePrefix := args[0]

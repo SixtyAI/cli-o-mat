@@ -2,16 +2,16 @@ package awsutil
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/FasterBetter/cli-o-mat/config"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ssm"
-	"github.com/cockroachdb/errors"
 )
 
-func FindAndAssumeAdminRole(accountSlug string, omat *config.Omat) (*config.SessionDetails, error) {
+func FindAndAssumeAdminRole(accountSlug string, omat *config.Omat) *config.SessionDetails {
 	paramPrefix := omat.Prefix()
 
 	ssmClient := ssm.New(omat.Credentials.RootSession, omat.Credentials.RootAWSConfig)
@@ -23,18 +23,21 @@ func FindAndAssumeAdminRole(accountSlug string, omat *config.Omat) (*config.Sess
 	})
 	if err != nil {
 		if strings.HasPrefix(err.Error(), "ParameterNotFound") {
-			return nil, errors.Errorf("couldn't find role parameter: %s", roleParamName)
+			fmt.Printf("Couldn't find role parameter: %s\n", roleParamName)
+			os.Exit(10)
 		}
 
-		return nil, errors.WithStack(err)
+		fmt.Printf("Error looking up role parameter %s, got: %s\n", roleParamName, err)
+		os.Exit(11)
 	}
 
 	arn := aws.StringValue(roleParam.Parameter.Value)
 	if arn == "" {
-		return nil, errors.Errorf("paramater '%s' was empty", roleParamName)
+		fmt.Printf("Paramater '%s' was empty\n", roleParamName)
+		os.Exit(12)
 	}
 
 	details := omat.Credentials.ForARN(arn)
 
-	return details, nil
+	return details
 }

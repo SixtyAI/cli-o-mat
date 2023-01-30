@@ -98,15 +98,9 @@ var subnetsCmd = &cobra.Command{
 	Short: "Show details about the available subnets.",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		omat, err := loadOmatConfig()
-		if err != nil {
-			util.Fatal(err)
-		}
+		omat := loadOmatConfig()
 
-		details, err := awsutil.FindAndAssumeAdminRole(omat.DeployAccountSlug, omat)
-		if err != nil {
-			util.Fatal(err)
-		}
+		details := awsutil.FindAndAssumeAdminRole(omat.DeployAccountSlug, omat)
 
 		ec2Client := ec2.New(details.Session, details.Config)
 
