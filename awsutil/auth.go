@@ -38,7 +38,7 @@ func FindAndAssumeAdminRole(accountSlug string, omat *config.Omat) *config.Sessi
 
 	arn := aws.StringValue(roleParam.Parameter.Value)
 	if arn == "" {
-		util.Fatalf(RoleParamEmpty, "Paramater '%s' was empty\n", roleParamName)
+		util.Fatalf(RoleParamEmpty, "Paramater '%s' was empty.\n", roleParamName)
 	}
 
 	details := omat.Credentials.ForARN(arn)

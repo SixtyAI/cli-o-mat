@@ -169,7 +169,7 @@ Errors:
 		}
 
 		if len(versions) == 0 {
-			util.Fatalf(NoSuchTemplate, "No launch template versions found")
+			util.Fatalf(NoSuchTemplate, "No launch template versions found.\n")
 		}
 
 		groupMap := buildSecurityGroupMapping(deployAcctEC2Client, versions)

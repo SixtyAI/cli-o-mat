@@ -51,7 +51,7 @@ func loadOmatConfig() *config.Omat {
 	omat := config.NewOmat()
 
 	if err := omat.LoadConfig(); err != nil {
-		util.Fatalf(1, "Failed to load omat config")
+		util.Fatalf(1, "Failed to load omat config.\n")
 	}
 
 	if region != "" {

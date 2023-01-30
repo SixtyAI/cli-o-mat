@@ -79,13 +79,13 @@ Errors:
 			for _, template := range templates {
 				fmt.Printf("\t%s\n", aws.StringValue(template.LaunchTemplateName))
 			}
-			util.Fatalf(NoMatchingLaunchTemplates, "No matching launch templates found")
+			util.Fatalf(NoMatchingLaunchTemplates, "No matching launch templates found.\n")
 		} else if len(candidates) > 1 {
 			fmt.Printf("Found the following launch templates matching specified prefix:\n")
 			for _, candidate := range candidates {
 				fmt.Printf("\t%s\n", candidate)
 			}
-			util.Fatalf(MultipleLaunchTemplates, "Multiple launch templates found")
+			util.Fatalf(MultipleLaunchTemplates, "Multiple launch templates found.\n")
 		}
 		name := candidates[0]
 		fmt.Printf("Using launch template %s...\n", name)
@@ -108,7 +108,7 @@ Errors:
 		}
 
 		if len(resp.Instances) != 1 {
-			util.Fatalf(CouldntLaunchInstance, "Unable to launch EC2 instance.")
+			util.Fatalf(CouldntLaunchInstance, "Unable to launch EC2 instance.\n")
 		}
 
 		fmt.Printf("Launching instance %s...\n", aws.StringValue(resp.Instances[0].InstanceId))
