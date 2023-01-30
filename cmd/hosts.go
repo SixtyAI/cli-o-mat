@@ -93,7 +93,7 @@ func showHosts(hosts []*ec2.Instance) {
 	tableConfig.Show(tableData)
 }
 
-//nolint: gochecknoglobals
+// nolint: gochecknoglobals
 var hostsCmd = &cobra.Command{
 	Use:   "hosts",
 	Short: "List AMIs.",
@@ -130,7 +130,7 @@ var hostsCmd = &cobra.Command{
 	},
 }
 
-//nolint: gochecknoinits
+// nolint: gochecknoinits
 func init() {
 	rootCmd.AddCommand(hostsCmd)
 }

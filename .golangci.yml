@@ -44,6 +44,8 @@ linters:
   # And the following are turned off because I'm not sure they're helpful:
   - exhaustruct
   - forbidigo
+  # Turning this off because it's in conflict with gofmt:
+  - nolintlint
 
 run:
   deadline: 5m

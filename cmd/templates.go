@@ -71,7 +71,7 @@ func showLaunchTemplates(templates []*ec2.LaunchTemplate) {
 	tableConfig.Show(tableData)
 }
 
-//nolint: gochecknoglobals
+// nolint: gochecknoglobals
 var launchTemplatesCmd = &cobra.Command{
 	Use:   "templates",
 	Short: "List launch templates.",
@@ -91,7 +91,7 @@ var launchTemplatesCmd = &cobra.Command{
 	},
 }
 
-//nolint: gochecknoinits
+// nolint: gochecknoinits
 func init() {
 	rootCmd.AddCommand(launchTemplatesCmd)
 }

@@ -7,12 +7,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-//nolint: stylecheck
+// nolint: stylecheck
 //
 //go:embed .version_string
 var Version string
 
-//nolint: gochecknoglobals
+// nolint: gochecknoglobals
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Show version.",
@@ -22,7 +22,7 @@ var versionCmd = &cobra.Command{
 	},
 }
 
-//nolint: gochecknoinits
+// nolint: gochecknoinits
 func init() {
 	rootCmd.AddCommand(versionCmd)
 }

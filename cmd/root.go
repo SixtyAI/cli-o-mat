@@ -9,7 +9,7 @@ import (
 	"github.com/FasterBetter/cli-o-mat/config"
 )
 
-//nolint: gochecknoglobals
+// nolint: gochecknoglobals
 var rootCmd = &cobra.Command{
 	Use:   "cli-o-mat",
 	Short: "CLI tool for managing Omat deploys",
@@ -24,7 +24,7 @@ func Execute() {
 	}
 }
 
-//nolint: gochecknoinits
+// nolint: gochecknoinits
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&region, "region", "", "", "Which AWS region to operate in")
 	rootCmd.PersistentFlags().StringVarP(&environment, "env", "", "", "Which logical environment to operate in")
@@ -34,7 +34,7 @@ func init() {
 		"The deploy-account slug (e.g. workload)")
 }
 
-//nolint: gochecknoglobals
+// nolint: gochecknoglobals
 var (
 	region            string
 	environment       string

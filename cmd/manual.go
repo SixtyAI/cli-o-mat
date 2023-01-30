@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-//nolint: gochecknoglobals
+// nolint: gochecknoglobals
 var manualCmd = &cobra.Command{
 	Use:   "manual",
 	Short: "Shows the full documentation for this tool",
@@ -54,7 +54,7 @@ return.
 	},
 }
 
-//nolint: gochecknoinits
+// nolint: gochecknoinits
 func init() {
 	rootCmd.AddCommand(manualCmd)
 }

@@ -16,7 +16,7 @@ import (
 
 var errCouldntLaunchInstance = errors.New("unable to launch instance")
 
-//nolint: gochecknoglobals,gomnd
+// nolint: gochecknoglobals,gomnd
 var launchCmd = &cobra.Command{
 	Use:   "launch template-name keypair-name [subnet-id]",
 	Short: "Launch an EC2 instance from a launch template.",
@@ -133,13 +133,13 @@ If you don't specify a subnet-id, the default subnet from the launch template wi
 	},
 }
 
-//nolint: gochecknoglobals
+// nolint: gochecknoglobals
 var (
 	launchVersion string
 	launchType    string
 )
 
-//nolint: gochecknoinits
+// nolint: gochecknoinits
 func init() {
 	rootCmd.AddCommand(launchCmd)
 	launchCmd.Flags().StringVarP(&launchVersion, "version", "", "", "Version of launch template to use (default: $Latest)")

@@ -92,7 +92,7 @@ func showSubnets(subnets []*ec2.Subnet) {
 	tableConfig.Show(tableData)
 }
 
-//nolint: gochecknoglobals
+// nolint: gochecknoglobals
 var subnetsCmd = &cobra.Command{
 	Use:   "subnets",
 	Short: "Show details about the available subnets.",
@@ -113,7 +113,7 @@ var subnetsCmd = &cobra.Command{
 	},
 }
 
-//nolint: gochecknoinits
+// nolint: gochecknoinits
 func init() {
 	rootCmd.AddCommand(subnetsCmd)
 }
