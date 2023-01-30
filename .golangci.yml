@@ -12,7 +12,6 @@ linters-settings:
       - default
   nolintlint:
     allow-unused: false
-    allow-leading-space: true
     require-explanation: false
     require-specific: true
 
