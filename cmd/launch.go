@@ -48,6 +48,9 @@ If you don't specify a subnet-id, the default subnet from the launch template wi
 		}
 
 		templates, err := awsutil.FetchLaunchTemplates(ec2Client, nil)
+		if err != nil {
+			util.Fatal(err)
+		}
 		candidates := make([]string, 0)
 		for _, template := range templates {
 			templateName := aws.StringValue(template.LaunchTemplateName)
