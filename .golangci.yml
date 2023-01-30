@@ -5,6 +5,9 @@ linters-settings:
     check-shadowing: true
   gofmt:
     simplify: true
+  gofumpt:
+    lang-version: "1.19"
+    extra-rules: true
   gci:
     sections:
       - standard
