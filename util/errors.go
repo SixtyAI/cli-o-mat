@@ -5,12 +5,12 @@ import (
 	"os"
 )
 
-func Fatal(err error) {
-	fmt.Printf("%+v\n", err)
-	os.Exit(1)
+func Fatal(code int, err error) {
+	fmt.Printf("%v\n", err)
+	os.Exit(code)
 }
 
-func Fatalf(format string, args ...any) {
+func Fatalf(code int, format string, args ...any) {
 	fmt.Printf(format, args...)
-	os.Exit(1)
+	os.Exit(code)
 }

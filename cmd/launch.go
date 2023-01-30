@@ -7,22 +7,37 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/cockroachdb/errors"
 	"github.com/spf13/cobra"
 
 	"github.com/FasterBetter/cli-o-mat/awsutil"
 	"github.com/FasterBetter/cli-o-mat/util"
 )
 
-var errCouldntLaunchInstance = errors.New("unable to launch instance")
+const (
+	CouldntLaunchInstance     = 100
+	NoMatchingLaunchTemplates = 101
+	MultipleLaunchTemplates   = 102
+)
 
 // nolint: gochecknoglobals,gomnd
 var launchCmd = &cobra.Command{
 	Use:   "launch template-name keypair-name [subnet-id]",
 	Short: "Launch an EC2 instance from a launch template.",
-	Long: `Launch an EC2 instance from a launch template.
+	Long: fmt.Sprintf(`Launch an EC2 instance from a launch template.
 
-If you don't specify a subnet-id, the default subnet from the launch template will be used.`,
+If you don't specify a subnet-id, the default subnet from the launch template
+will be used.
+
+Errors:
+
+%3d - EC2 didn't return an error, but didn't return information about a newly
+      launched instance.  You may need to check the AWS console to see if an
+      instance was actually launched.
+%3d - No launch templates matching the name prefix provided were found.
+%3d - More than one launch template matching the name prefix provided was found.`,
+		CouldntLaunchInstance,
+		NoMatchingLaunchTemplates,
+		MultipleLaunchTemplates),
 	Args: cobra.RangeArgs(2, 3),
 	Run: func(cmd *cobra.Command, args []string) {
 		omat := loadOmatConfig()
@@ -49,7 +64,7 @@ If you don't specify a subnet-id, the default subnet from the launch template wi
 
 		templates, err := awsutil.FetchLaunchTemplates(ec2Client, nil)
 		if err != nil {
-			util.Fatal(err)
+			util.Fatal(AWSAPIError, err)
 		}
 		candidates := make([]string, 0)
 		for _, template := range templates {
@@ -64,13 +79,13 @@ If you don't specify a subnet-id, the default subnet from the launch template wi
 			for _, template := range templates {
 				fmt.Printf("\t%s\n", aws.StringValue(template.LaunchTemplateName))
 			}
-			util.Fatal(errors.New("no matching launch templates found"))
+			util.Fatalf(NoMatchingLaunchTemplates, "No matching launch templates found")
 		} else if len(candidates) > 1 {
 			fmt.Printf("Found the following launch templates matching specified prefix:\n")
 			for _, candidate := range candidates {
 				fmt.Printf("\t%s\n", candidate)
 			}
-			util.Fatal(errors.New("multiple launch templates found"))
+			util.Fatalf(MultipleLaunchTemplates, "Multiple launch templates found")
 		}
 		name := candidates[0]
 		fmt.Printf("Using launch template %s...\n", name)
@@ -89,11 +104,11 @@ If you don't specify a subnet-id, the default subnet from the launch template wi
 			SubnetId: subnetID,
 		})
 		if err != nil {
-			util.Fatal(err)
+			util.Fatal(AWSAPIError, err)
 		}
 
 		if len(resp.Instances) != 1 {
-			util.Fatal(errCouldntLaunchInstance)
+			util.Fatalf(CouldntLaunchInstance, "Unable to launch EC2 instance.")
 		}
 
 		fmt.Printf("Launching instance %s...\n", aws.StringValue(resp.Instances[0].InstanceId))
@@ -115,7 +130,7 @@ If you don't specify a subnet-id, the default subnet from the launch template wi
 				InstanceIds: instanceIds,
 			})
 			if err != nil {
-				util.Fatal(err)
+				util.Fatal(AWSAPIError, err)
 			}
 
 			if aws.StringValue(resp.Reservations[0].Instances[0].PublicIpAddress) != "" {

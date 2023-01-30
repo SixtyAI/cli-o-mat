@@ -2,13 +2,13 @@ package awsutil
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ssm"
 
 	"github.com/FasterBetter/cli-o-mat/config"
+	"github.com/FasterBetter/cli-o-mat/util"
 )
 
 const (
@@ -29,18 +29,16 @@ func FindAndAssumeAdminRole(accountSlug string, omat *config.Omat) *config.Sessi
 	})
 	if err != nil {
 		if strings.HasPrefix(err.Error(), "ParameterNotFound") {
-			fmt.Printf("Couldn't find role parameter: %s\n", roleParamName)
-			os.Exit(CantFindRoleParam)
+			util.Fatalf(CantFindRoleParam, "Couldn't find role parameter: %s\n", roleParamName)
 		}
 
-		fmt.Printf("Error looking up role parameter %s, got: %s\n", roleParamName, err)
-		os.Exit(ErrorLookingUpRoleParam)
+		fmt.Printf("Error looking up role parameter %s, got: %s\n", roleParamName, err.Error())
+		util.Fatalf(ErrorLookingUpRoleParam, "Error looking up role parameter %s, got: %s\n", roleParamName, err.Error())
 	}
 
 	arn := aws.StringValue(roleParam.Parameter.Value)
 	if arn == "" {
-		fmt.Printf("Paramater '%s' was empty\n", roleParamName)
-		os.Exit(RoleParamEmpty)
+		util.Fatalf(RoleParamEmpty, "Paramater '%s' was empty\n", roleParamName)
 	}
 
 	details := omat.Credentials.ForARN(arn)

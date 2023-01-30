@@ -7,15 +7,12 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/cockroachdb/errors"
 	"github.com/spf13/cobra"
 
 	"github.com/FasterBetter/cli-o-mat/awsutil"
 	"github.com/FasterBetter/cli-o-mat/config"
 	"github.com/FasterBetter/cli-o-mat/util"
 )
-
-var errNoLaunchTemplate = fmt.Errorf("no launch template versions found")
 
 func showLaunchTemplateVersions(shortHashes bool, templates []*ec2.LaunchTemplateVersion, groupMap map[string]string,
 	imageMap map[string]string,
@@ -85,7 +82,7 @@ func stringifySecurityGroups(version *ec2.LaunchTemplateVersion, groupMap map[st
 	return securityGroupIds
 }
 
-func buildSecurityGroupMapping(ec2Client *ec2.EC2, versions []*ec2.LaunchTemplateVersion) (map[string]string, error) {
+func buildSecurityGroupMapping(ec2Client *ec2.EC2, versions []*ec2.LaunchTemplateVersion) map[string]string {
 	groupMap := map[string]string{}
 
 	for _, version := range versions {
@@ -101,17 +98,17 @@ func buildSecurityGroupMapping(ec2Client *ec2.EC2, versions []*ec2.LaunchTemplat
 
 	groups, err := awsutil.FetchSecurityGroups(ec2Client, groupIDs)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		util.Fatal(AWSAPIError, err)
 	}
 
 	for _, group := range groups {
 		groupMap[aws.StringValue(group.GroupId)] = aws.StringValue(group.GroupName)
 	}
 
-	return groupMap, nil
+	return groupMap
 }
 
-func buildImageMapping(ec2Client *ec2.EC2) (map[string]string, error) {
+func buildImageMapping(ec2Client *ec2.EC2) map[string]string {
 	imageMap := map[string]string{}
 
 	// N.B. I'd _like_ to just request the image IDs we care about, but the ImageId parameter here is... not behaving
@@ -123,7 +120,7 @@ func buildImageMapping(ec2Client *ec2.EC2) (map[string]string, error) {
 		Owners:            []*string{aws.String("self")},
 	})
 	if err != nil {
-		return nil, errors.WithStack(err)
+		util.Fatal(AWSAPIError, err)
 	}
 
 	for _, image := range images.Images {
@@ -140,15 +137,23 @@ func buildImageMapping(ec2Client *ec2.EC2) (map[string]string, error) {
 		imageMap[aws.StringValue(image.ImageId)] = commit
 	}
 
-	return imageMap, nil
+	return imageMap
 }
+
+const NoSuchTemplate = 100
 
 // nolint: gochecknoglobals
 var launchTemplateCmd = &cobra.Command{
 	Use:   "template template-name",
 	Short: "Show details about a launch template.",
-	Long:  ``,
-	Args:  cobra.ExactArgs(1),
+	Long: fmt.Sprintf(`
+Show details about a launch template.
+
+Errors:
+
+%3d - The specified launch template was not found.`,
+		NoSuchTemplate),
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		omat := loadOmatConfig()
 
@@ -160,22 +165,15 @@ var launchTemplateCmd = &cobra.Command{
 
 		versions, err := awsutil.FetchLaunchTemplateVersions(deployAcctEC2Client, args[0], nil)
 		if err != nil {
-			util.Fatal(err)
+			util.Fatal(AWSAPIError, err)
 		}
 
 		if len(versions) == 0 {
-			util.Fatal(errNoLaunchTemplate)
+			util.Fatalf(NoSuchTemplate, "No launch template versions found")
 		}
 
-		groupMap, err := buildSecurityGroupMapping(deployAcctEC2Client, versions)
-		if err != nil {
-			util.Fatal(err)
-		}
-
-		imageMap, err := buildImageMapping(buildAcctEC2Client)
-		if err != nil {
-			util.Fatal(err)
-		}
+		groupMap := buildSecurityGroupMapping(deployAcctEC2Client, versions)
+		imageMap := buildImageMapping(buildAcctEC2Client)
 
 		showLaunchTemplateVersions(templateShortHashes, versions, groupMap, imageMap)
 	},

@@ -106,7 +106,7 @@ var subnetsCmd = &cobra.Command{
 
 		subnets, err := awsutil.FetchSubnets(ec2Client)
 		if err != nil {
-			util.Fatal(err)
+			util.Fatal(AWSAPIError, err)
 		}
 
 		showSubnets(subnets)

@@ -1,12 +1,16 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
 
 	"github.com/FasterBetter/cli-o-mat/config"
+	"github.com/FasterBetter/cli-o-mat/util"
+)
+
+const (
+	AWSAPIError = 13
 )
 
 // nolint: gochecknoglobals
@@ -47,8 +51,7 @@ func loadOmatConfig() *config.Omat {
 	omat := config.NewOmat()
 
 	if err := omat.LoadConfig(); err != nil {
-		fmt.Printf("Failed to load omat config")
-		os.Exit(1)
+		util.Fatalf(1, "Failed to load omat config")
 	}
 
 	if region != "" {
