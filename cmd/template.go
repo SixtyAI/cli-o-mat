@@ -143,7 +143,7 @@ func buildImageMapping(ec2Client *ec2.EC2) (map[string]string, error) {
 	return imageMap, nil
 }
 
-// nolint: gochecknoglobals
+//nolint: gochecknoglobals
 var launchTemplateCmd = &cobra.Command{
 	Use:   "template template-name",
 	Short: "Show details about a launch template.",
@@ -181,10 +181,10 @@ var launchTemplateCmd = &cobra.Command{
 	},
 }
 
-// nolint: gochecknoglobals
+//nolint: gochecknoglobals
 var templateShortHashes bool
 
-// nolint: gochecknoinits
+//nolint: gochecknoinits
 func init() {
 	rootCmd.AddCommand(launchTemplateCmd)
 

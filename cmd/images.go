@@ -63,7 +63,7 @@ func showImages(shortHashes bool, images []*ec2.Image) {
 	tableConfig.Show(tableData)
 }
 
-// nolint: gochecknoglobals
+//nolint: gochecknoglobals
 var imagesCmd = &cobra.Command{
 	Use:   "images",
 	Short: "List AMIs.",
@@ -86,10 +86,10 @@ var imagesCmd = &cobra.Command{
 	},
 }
 
-// nolint: gochecknoglobals
+//nolint: gochecknoglobals
 var imagesShortHashes bool
 
-// nolint: gochecknoinits
+//nolint: gochecknoinits
 func init() {
 	rootCmd.AddCommand(imagesCmd)
 

@@ -43,7 +43,7 @@ func getSubnetTagValues(tags []*ec2.Tag) (string, string, string, string) {
 func showSubnets(subnets []*ec2.Subnet) {
 	tableData := make([][]string, len(subnets))
 
-	// nolint: varnamelen
+	//nolint: varnamelen
 	sort.SliceStable(subnets, func(i, j int) bool {
 		switch strings.Compare(aws.StringValue(subnets[i].VpcId), aws.StringValue(subnets[j].VpcId)) {
 		case -1:
@@ -92,7 +92,7 @@ func showSubnets(subnets []*ec2.Subnet) {
 	tableConfig.Show(tableData)
 }
 
-// nolint: gochecknoglobals
+//nolint: gochecknoglobals
 var subnetsCmd = &cobra.Command{
 	Use:   "subnets",
 	Short: "Show details about the available subnets.",
@@ -113,7 +113,7 @@ var subnetsCmd = &cobra.Command{
 	},
 }
 
-// nolint: gochecknoinits
+//nolint: gochecknoinits
 func init() {
 	rootCmd.AddCommand(subnetsCmd)
 }
