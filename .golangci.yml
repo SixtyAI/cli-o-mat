@@ -19,17 +19,21 @@ linters:
   - golint # Deprecated.  Archived by owner.  See revive.
   - scopelint # Deprecated.  Archived by owner.  See exportloopref.
   - interfacer # Deprecated.  Archived by owner.
+  - varcheck # Deprecated.  See unused.
+  - ifshort # Deprecated.
+  - deadcode # Deprecated.  See unused.
+  - nosnakecase # Deprecated.  See revive(var-naming).
+  - structcheck # Deprecated.
   # The following are disabled pending 1.18 support.  See: https://github.com/golangci/golangci-lint/issues/2649
   - bodyclose
-  - contextcheck
-  - nilerr
-  - noctx
   - rowserrcheck
   - sqlclosecheck
-  - structcheck
-  - tparallel
-  - unparam
   - wastedassign
+  # - contextcheck
+  # - nilerr
+  # - noctx
+  # - tparallel
+  # - unparam
   # And the following are turned off because I'm not sure they're helpful:
   - exhaustruct
   - forbidigo
