@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -52,7 +51,7 @@ func findOmatConfig(dir string) (string, error) {
 }
 
 func (omat *Omat) loadConfigFromFile(path string) error {
-	configData, err := ioutil.ReadFile(path)
+	configData, err := os.ReadFile(path)
 	if err != nil {
 		return errors.WithStack(err)
 	}
