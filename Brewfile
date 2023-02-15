@@ -2,3 +2,4 @@
 
 brew "circleci"
 brew "golangci-lint"
+brew "gimme"
