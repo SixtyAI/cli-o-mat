@@ -112,7 +112,7 @@ Errors:
 		}
 
 		fmt.Printf("Launching instance %s...\n", aws.StringValue(resp.Instances[0].InstanceId))
-		fmt.Printf("Waiting for instance to public IP...\n")
+		fmt.Printf("Waiting for instance to have a public IP...\n")
 
 		counter := 0
 		instanceIds := []*string{resp.Instances[0].InstanceId}
