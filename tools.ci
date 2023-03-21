@@ -7,3 +7,4 @@ golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow@latest
 golang.org/x/tools/go/analysis/passes/stringintconv/cmd/stringintconv@latest
 golang.org/x/tools/go/analysis/passes/unmarshal/cmd/unmarshal@latest
 mvdan.cc/gofumpt@latest
+golang.org/x/vuln/cmd/govulncheck@latest

@@ -69,6 +69,9 @@ lint: clean ## Run Go linters, without auto-fixing.
 	GOOS=${GOOS} GOARCH=${GOARCH} golangci-lint run --config ./.golangci.yml
 	python3.9 -m chainjacking -gt $$GITHUB_TOKEN
 
+vulncheck: ## Check for known vulnerabilities.
+	govulncheck ./...
+
 fix: ## Run transforms to simplify/correct known undesirable patterns of code.
 	golangci-lint run --config ./.golangci.yml --fix
 
