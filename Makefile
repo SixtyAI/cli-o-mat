@@ -76,5 +76,12 @@ cloc: ## Run cloc.
 	cloc .
 	@echo
 
+outdated: ## Check for outdated dependencies.
+	go list -u -m all
+
+update: ## Update dependencies.
+	go get -t -u ./...
+	go mod tidy
+
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "%-20s %s\n", $$1, $$2}'
