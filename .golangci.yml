@@ -6,7 +6,7 @@ linters-settings:
   gofmt:
     simplify: true
   gofumpt:
-    lang-version: "1.19"
+    lang-version: "1.20"
     extra-rules: true
   gci:
     sections:
@@ -31,18 +31,7 @@ linters:
   - deadcode # Deprecated.  See unused.
   - nosnakecase # Deprecated.  See revive(var-naming).
   - structcheck # Deprecated.
-  # The following are disabled pending 1.18 support.  See: https://github.com/golangci/golangci-lint/issues/2649
-  - bodyclose
-  - rowserrcheck
-  - sqlclosecheck
-  - wastedassign
-  - gocritic
-  # - contextcheck
-  # - nilerr
-  # - noctx
-  # - tparallel
-  # - unparam
-  # And the following are turned off because I'm not sure they're helpful:
+  # The following are turned off because I'm not sure they're helpful:
   - exhaustruct
   - forbidigo
   # Turning this off because it's in conflict with gofmt:
