@@ -98,6 +98,14 @@ Errors:
 			InstanceType:                      instanceType,
 			InstanceInitiatedShutdownBehavior: aws.String("terminate"),
 			KeyName:                           aws.String(keypair),
+			BlockDeviceMappings: []*ec2.BlockDeviceMapping{
+				{
+					DeviceName: aws.String("/dev/xvda"),
+					Ebs: &ec2.EbsBlockDevice{
+						VolumeSize: aws.Int64(volumeSize),
+					},
+				},
+			},
 
 			MinCount: aws.Int64(1),
 			MaxCount: aws.Int64(1),
@@ -152,6 +160,7 @@ Errors:
 var (
 	launchVersion string
 	launchType    string
+	volumeSize    int64
 )
 
 // nolint: gochecknoinits
@@ -159,4 +168,5 @@ func init() {
 	rootCmd.AddCommand(launchCmd)
 	launchCmd.Flags().StringVarP(&launchVersion, "version", "", "", "Version of launch template to use (default: $Latest)")
 	launchCmd.Flags().StringVarP(&launchType, "type", "", "", "Instance type to launch (default from launch template)")
+	launchCmd.Flags().Int64VarP(&volumeSize, "size", "", 4, "Size of EBS volume in GB (default: 4)")
 }
