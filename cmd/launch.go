@@ -163,10 +163,13 @@ var (
 	volumeSize    int64
 )
 
+const DefaultVolumeSize = 4
+
 // nolint: gochecknoinits
 func init() {
 	rootCmd.AddCommand(launchCmd)
 	launchCmd.Flags().StringVarP(&launchVersion, "version", "", "", "Version of launch template to use (default: $Latest)")
 	launchCmd.Flags().StringVarP(&launchType, "type", "", "", "Instance type to launch (default from launch template)")
-	launchCmd.Flags().Int64VarP(&volumeSize, "size", "", 4, "Size of EBS volume in GB (default: 4)")
+	launchCmd.Flags().Int64VarP(&volumeSize, "size", "", DefaultVolumeSize,
+		fmt.Sprintf("Size of EBS volume in GB (default: %d)", DefaultVolumeSize))
 }

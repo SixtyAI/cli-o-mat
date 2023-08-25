@@ -11,7 +11,7 @@ import (
 )
 
 type Omat struct {
-	Credentials *CredentialCache
+	Credentials *CredentialCache `yaml:"-"`
 
 	OrganizationPrefix string `yaml:"organizationPrefix"`
 	Region             string `yaml:"region"`

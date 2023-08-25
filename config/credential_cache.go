@@ -14,10 +14,10 @@ type SessionDetails struct {
 }
 
 type CredentialCache struct {
-	RootAWSConfig *aws.Config
-	RootSession   *session.Session
+	RootAWSConfig *aws.Config      `yaml:"-"`
+	RootSession   *session.Session `yaml:"-"`
 	// metaCreds     *SessionDetails
-	byARN map[string]*SessionDetails
+	byARN map[string]*SessionDetails `yaml:"-"`
 }
 
 func newCredentialCache(omat *Omat) *CredentialCache {
