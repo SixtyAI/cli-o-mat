@@ -7,8 +7,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ssm"
 
-	"github.com/FasterBetter/cli-o-mat/config"
-	"github.com/FasterBetter/cli-o-mat/util"
+	"github.com/SixtyAI/cli-o-mat/config"
+	"github.com/SixtyAI/cli-o-mat/util"
 )
 
 const (

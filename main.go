@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/FasterBetter/cli-o-mat/cmd"
+	"github.com/SixtyAI/cli-o-mat/cmd"
 )
 
 func main() {

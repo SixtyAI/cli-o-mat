@@ -8,9 +8,9 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/spf13/cobra"
 
-	"github.com/FasterBetter/cli-o-mat/awsutil"
-	"github.com/FasterBetter/cli-o-mat/config"
-	"github.com/FasterBetter/cli-o-mat/util"
+	"github.com/SixtyAI/cli-o-mat/awsutil"
+	"github.com/SixtyAI/cli-o-mat/config"
+	"github.com/SixtyAI/cli-o-mat/util"
 )
 
 func showImages(shortHashes bool, images []*ec2.Image) {

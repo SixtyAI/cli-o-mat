@@ -1,4 +1,4 @@
-module github.com/FasterBetter/cli-o-mat
+module github.com/SixtyAI/cli-o-mat
 
 go 1.21
 

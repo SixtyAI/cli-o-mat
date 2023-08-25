@@ -11,7 +11,7 @@ linters-settings:
   gci:
     sections:
       - standard
-      - prefix(github.com/FasterBetter)
+      - prefix(github.com/SixtyAI)
       - default
   nolintlint:
     allow-unused: false

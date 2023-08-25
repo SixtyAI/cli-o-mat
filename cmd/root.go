@@ -5,8 +5,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/FasterBetter/cli-o-mat/config"
-	"github.com/FasterBetter/cli-o-mat/util"
+	"github.com/SixtyAI/cli-o-mat/config"
+	"github.com/SixtyAI/cli-o-mat/util"
 )
 
 const (

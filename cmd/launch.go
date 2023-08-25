@@ -9,8 +9,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/spf13/cobra"
 
-	"github.com/FasterBetter/cli-o-mat/awsutil"
-	"github.com/FasterBetter/cli-o-mat/util"
+	"github.com/SixtyAI/cli-o-mat/awsutil"
+	"github.com/SixtyAI/cli-o-mat/util"
 )
 
 const (
