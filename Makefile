@@ -13,7 +13,7 @@ setup_ci: ## Install/update tools needed at CI-time.
 			go install $${TOOL}; \
 		done; \
 	fi
-	pip install chainjacking
+	pip3.11 install chainjacking
 
 setup_workstation: setup_ci ## Install/update tools needed at dev-time.
 	if [ $$(wc -l < tools.dev) -gt 0 ]; then \
@@ -67,7 +67,7 @@ lint: clean ## Run Go linters, without auto-fixing.
 		done \
 	fi
 	GOOS=${GOOS} GOARCH=${GOARCH} golangci-lint run --config ./.golangci.yml
-	python3.9 -m chainjacking -gt $$GITHUB_TOKEN
+	python3.11 -m chainjacking -gt $$GITHUB_TOKEN
 
 vulncheck: ## Check for known vulnerabilities.
 	govulncheck ./...
