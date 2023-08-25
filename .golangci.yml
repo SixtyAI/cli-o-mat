@@ -36,6 +36,8 @@ linters:
   - forbidigo
   # Turning this off because it's in conflict with gofmt:
   - nolintlint
+  # Turning this off because we're not ready for that level of overhead.
+  - depguard # See: https://github.com/OpenPeeDeeP/depguard
 
 run:
   deadline: 5m
