@@ -87,7 +87,9 @@ Errors:
 			}
 			util.Fatalf(MultipleLaunchTemplates, "Multiple launch templates found.\n")
 		}
-		name := candidates[0]
+		// N.B. The following check is disabled until this is fixed:
+		// https://github.com/securego/gosec/issues/1005
+		name := candidates[0] // #nosec G602
 		fmt.Printf("Using launch template %s...\n", name)
 
 		resp, err := ec2Client.RunInstances(&ec2.RunInstancesInput{
