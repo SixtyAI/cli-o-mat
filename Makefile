@@ -80,7 +80,7 @@ cloc: ## Run cloc.
 	@echo
 
 outdated: ## Check for outdated dependencies.
-	go list -u -m all
+	go list -u -m all | fgrep '['
 
 update: ## Update dependencies.
 	go get -t -u ./...
