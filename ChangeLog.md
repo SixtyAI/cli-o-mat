@@ -1,5 +1,13 @@
 # Changes
 
+## 0.0.4
+
+* Update Go, and various dependencies
+* Rename organization from FasterBetter to SixtyAI
+* Pin Python version
+* Update linter configuration
+* Minor touchups, per linter recommendations
+
 ## 0.0.3
 
 * Teach `images` subcommand to show size of root volume
