@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"fmt"
 	"sort"
+	"strconv"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
@@ -42,7 +42,7 @@ func showImages(shortHashes bool, images []*ec2.Image) {
 			aws.StringValue(image.State),
 			commit,
 			aws.StringValue(image.Name),
-			fmt.Sprintf("%d", *image.BlockDeviceMappings[0].Ebs.VolumeSize),
+			strconv.FormatInt(*image.BlockDeviceMappings[0].Ebs.VolumeSize, 10),
 			aws.StringValue(image.CreationDate),
 		}
 	}

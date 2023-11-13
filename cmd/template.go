@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"sort"
+	"strconv"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -42,7 +43,7 @@ func showLaunchTemplateVersions(shortHashes bool, templates []*ec2.LaunchTemplat
 		}
 
 		tableData[idx] = []string{
-			fmt.Sprintf("%d", aws.Int64Value(version.VersionNumber)),
+			strconv.FormatInt(aws.Int64Value(version.VersionNumber), 10),
 			awsutil.DefaultToString(version.DefaultVersion),
 			version.CreateTime.Format(time.RFC3339),
 			aws.StringValue(data.InstanceType),

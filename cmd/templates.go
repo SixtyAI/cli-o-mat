@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"fmt"
 	"sort"
+	"strconv"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -46,8 +46,8 @@ func showLaunchTemplates(templates []*ec2.LaunchTemplate) {
 			aws.StringValue(template.LaunchTemplateName),
 			application,
 			service,
-			fmt.Sprintf("%d", aws.Int64Value(template.DefaultVersionNumber)),
-			fmt.Sprintf("%d", aws.Int64Value(template.LatestVersionNumber)),
+			strconv.FormatInt(aws.Int64Value(template.DefaultVersionNumber), 10),
+			strconv.FormatInt(aws.Int64Value(template.LatestVersionNumber), 10),
 			template.CreateTime.Format(time.RFC3339),
 		}
 	}
