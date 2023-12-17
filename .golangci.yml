@@ -39,9 +39,6 @@ linters:
   # Turning this off because we're not ready for that level of overhead.
   - depguard # See: https://github.com/OpenPeeDeeP/depguard
 
-run:
-  deadline: 5m
-
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
