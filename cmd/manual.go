@@ -11,7 +11,7 @@ var manualCmd = &cobra.Command{
 	Use:   "manual",
 	Short: "Shows the full documentation for this tool",
 	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		fmt.Println(`Omat Manual
 
 -------------

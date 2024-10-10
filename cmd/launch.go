@@ -17,6 +17,8 @@ const (
 	CouldntLaunchInstance     = 100
 	NoMatchingLaunchTemplates = 101
 	MultipleLaunchTemplates   = 102
+
+	LaunchWaitTimeout = 30
 )
 
 // nolint: gochecknoglobals,gomnd
@@ -38,8 +40,8 @@ Errors:
 		CouldntLaunchInstance,
 		NoMatchingLaunchTemplates,
 		MultipleLaunchTemplates),
-	Args: cobra.RangeArgs(2, 3),
-	Run: func(cmd *cobra.Command, args []string) {
+	Args: cobra.RangeArgs(2, 3), // nolint: mnd
+	Run: func(_ *cobra.Command, args []string) {
 		omat := loadOmatConfig()
 
 		details := awsutil.FindAndAssumeAdminRole(omat.DeployAccountSlug, omat)
@@ -49,7 +51,7 @@ Errors:
 		keypair := args[1]
 
 		var subnetID *string
-		if len(args) == 3 {
+		if len(args) == 3 { // nolint: mnd
 			subnetID = aws.String(args[2])
 		}
 
@@ -123,19 +125,19 @@ Errors:
 		fmt.Printf("Waiting for instance to have a public IP...\n")
 
 		counter := 0
-		instanceIds := []*string{resp.Instances[0].InstanceId}
+		instanceIDs := []*string{resp.Instances[0].InstanceId}
 		publicIP := ""
 
 		for {
 			<-time.After(1 * time.Second)
 
 			counter++
-			if counter > 30 {
+			if counter > LaunchWaitTimeout {
 				break
 			}
 
 			resp, err := ec2Client.DescribeInstances(&ec2.DescribeInstancesInput{
-				InstanceIds: instanceIds,
+				InstanceIds: instanceIDs,
 			})
 			if err != nil {
 				util.Fatal(AWSAPIError, err)

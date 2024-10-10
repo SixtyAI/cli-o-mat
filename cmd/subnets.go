@@ -97,7 +97,7 @@ var subnetsCmd = &cobra.Command{
 	Use:   "subnets",
 	Short: "Show details about the available subnets.",
 	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		omat := loadOmatConfig()
 
 		details := awsutil.FindAndAssumeAdminRole(omat.DeployAccountSlug, omat)

@@ -3,11 +3,13 @@ linters-settings:
     check-type-assertions: true
     check-blank: true
   govet:
-    check-shadowing: true
+    # shadow: true
+    enable-all: true
   gofmt:
     simplify: true
   gofumpt:
-    lang-version: "1.21"
+    # TODO: Set up a `run.go` file?
+    # lang-version: "1.21"
     extra-rules: true
   gci:
     sections:
@@ -22,16 +24,8 @@ linters-settings:
 linters:
   enable-all: true
   disable:
-  - maligned # Deprecated, see govet's fieldalignment instead.
-  - exhaustivestruct # Deprecated.  Owner disappeared.  See exhaustruct.
-  - golint # Deprecated.  Archived by owner.  See revive.
-  - scopelint # Deprecated.  Archived by owner.  See exportloopref.
-  - interfacer # Deprecated.  Archived by owner.
-  - varcheck # Deprecated.  See unused.
-  - ifshort # Deprecated.
-  - deadcode # Deprecated.  See unused.
-  - nosnakecase # Deprecated.  See revive(var-naming).
-  - structcheck # Deprecated.
+  - execinquery # Deprecated
+  - gomnd # Deprecated
   # The following are turned off because I'm not sure they're helpful:
   - exhaustruct
   - forbidigo

@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/SixtyAI/cli-o-mat/util"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/spf13/cobra"
+
+	"github.com/SixtyAI/cli-o-mat/util"
 )
 
 const (
@@ -21,7 +22,7 @@ var orgPrefixCmd = &cobra.Command{
 	Use:   "org-prefix",
 	Short: "Show the detected org prefix.",
 	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		omat := loadOmatConfig()
 
 		ssmClient := ssm.New(omat.Credentials.RootSession, omat.Credentials.RootAWSConfig)
@@ -37,7 +38,8 @@ var orgPrefixCmd = &cobra.Command{
 			}
 
 			fmt.Printf("Error looking up org prefix parameter %s, got: %s\n", roleParamName, err.Error())
-			util.Fatalf(ErrorLookingUpRoleParam, "Error looking up org prefix parameter %s, got: %s\n", roleParamName, err.Error())
+			util.Fatalf(ErrorLookingUpRoleParam,
+				"Error looking up org prefix parameter %s, got: %s\n", roleParamName, err.Error())
 		}
 
 		orgPrefix := aws.StringValue(roleParam.Parameter.Value)

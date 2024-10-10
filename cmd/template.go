@@ -35,7 +35,7 @@ func showLaunchTemplateVersions(shortHashes bool, templates []*ec2.LaunchTemplat
 			data = &ec2.ResponseLaunchTemplateData{}
 		}
 
-		securityGroupIds := stringifySecurityGroups(version, groupMap)
+		securityGroupIDs := stringifySecurityGroups(version, groupMap)
 
 		commit := imageMap[aws.StringValue(data.ImageId)]
 		if shortHashes && commit != "" {
@@ -50,7 +50,7 @@ func showLaunchTemplateVersions(shortHashes bool, templates []*ec2.LaunchTemplat
 			aws.StringValue(data.ImageId),
 			commit,
 			aws.StringValue(data.KeyName),
-			securityGroupIds,
+			securityGroupIDs,
 		}
 	}
 
@@ -71,16 +71,16 @@ func showLaunchTemplateVersions(shortHashes bool, templates []*ec2.LaunchTemplat
 }
 
 func stringifySecurityGroups(version *ec2.LaunchTemplateVersion, groupMap map[string]string) string {
-	securityGroupIds := ""
+	securityGroupIDs := ""
 	for _, group := range version.LaunchTemplateData.SecurityGroupIds {
-		securityGroupIds += ", " + groupMap[aws.StringValue(group)]
+		securityGroupIDs += ", " + groupMap[aws.StringValue(group)]
 	}
 
-	if len(securityGroupIds) > 0 {
-		securityGroupIds = securityGroupIds[2:]
+	if len(securityGroupIDs) > 0 {
+		securityGroupIDs = securityGroupIDs[2:]
 	}
 
-	return securityGroupIds
+	return securityGroupIDs
 }
 
 func buildSecurityGroupMapping(ec2Client *ec2.EC2, versions []*ec2.LaunchTemplateVersion) map[string]string {
@@ -116,7 +116,7 @@ func buildImageMapping(ec2Client *ec2.EC2) map[string]string {
 	// nicely.  Specifically, if _any_ of the images are not found, the API will return an error.  Rather than try to
 	// sort out what does/doesn't exist by parsing the error, we'll just request all of them.
 	images, err := ec2Client.DescribeImages(&ec2.DescribeImagesInput{
-		// ImageIds:          aws.StringSlice(imageIDs),
+		// ImageIDs:          aws.StringSlice(imageIDs),
 		IncludeDeprecated: aws.Bool(true),
 		Owners:            []*string{aws.String("self")},
 	})
@@ -155,7 +155,7 @@ Errors:
 %3d - The specified launch template was not found.`,
 		NoSuchTemplate),
 	Args: cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, args []string) {
 		omat := loadOmatConfig()
 
 		deployAcctDetails := awsutil.FindAndAssumeAdminRole(omat.DeployAccountSlug, omat)

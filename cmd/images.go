@@ -71,7 +71,7 @@ var imagesCmd = &cobra.Command{
 	Use:   "images",
 	Short: "List AMIs.",
 	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		omat := loadOmatConfig()
 
 		details := awsutil.FindAndAssumeAdminRole(omat.BuildAccountSlug, omat)

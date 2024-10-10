@@ -98,7 +98,7 @@ var hostsCmd = &cobra.Command{
 	Use:   "hosts",
 	Short: "List EC2 instances.",
 	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		omat := loadOmatConfig()
 
 		details := awsutil.FindAndAssumeAdminRole(omat.DeployAccountSlug, omat)
