@@ -141,7 +141,7 @@ func buildImageMapping(ec2Client *ec2.EC2) map[string]string {
 	return imageMap
 }
 
-const NoSuchTemplate = 100
+const NoSuchTemplate = 103
 
 // nolint: gochecknoglobals
 var launchTemplateCmd = &cobra.Command{
