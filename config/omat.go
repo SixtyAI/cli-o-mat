@@ -2,7 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"path"
 	"path/filepath"
@@ -116,17 +115,13 @@ func (omat *Omat) LoadConfig() error {
 	omat.loadConfigFromEnv()
 	omat.InitCredentials()
 
-	if err = omat.FetchOrgPrefix(); err != nil {
-		return errors.Wrap(err, "couldn't load org prefix SSM param")
-	}
-	if err = omat.FetchAccountInfo(); err != nil {
-		return errors.Wrap(err, "couldn't load account info SSM param")
-	}
+	omat.FetchOrgPrefix()
+	omat.FetchAccountInfo()
 
 	return nil
 }
 
-func (omat *Omat) FetchOrgPrefix() error {
+func (omat *Omat) FetchOrgPrefix() {
 	ssmClient := ssm.New(omat.Credentials.RootSession, omat.Credentials.RootAWSConfig)
 	roleParamName := "/omat/organization_prefix"
 
@@ -148,11 +143,9 @@ func (omat *Omat) FetchOrgPrefix() error {
 	}
 
 	omat.OrganizationPrefix = orgPrefix
-
-	return nil
 }
 
-func (omat *Omat) FetchAccountInfo() error {
+func (omat *Omat) FetchAccountInfo() {
 	ssmClient := ssm.New(omat.Credentials.RootSession, omat.Credentials.RootAWSConfig)
 	infoParamName := "/omat/account_registry/" + omat.AccountName
 
@@ -173,23 +166,14 @@ func (omat *Omat) FetchAccountInfo() error {
 		util.Fatalf(SSMParamEmpty, "Paramater '%s' was empty.\n", infoParamName)
 	}
 
-	fmt.Printf("Raw account info: %s\n", accountInfo)
 	var data accountInfoConfig
 	if err = json.Unmarshal([]byte(accountInfo), &data); err != nil {
 		util.Fatalf(CantParseSSMParam, "Couldn't parse account info parameter: %s\nGot: %s\n", infoParamName, accountInfo)
 	}
 
 	omat.ParamPrefix = data.Prefix
-	fmt.Printf("Prefix: %s\n", omat.ParamPrefix)
-
-	return nil
 }
 
 func (omat *Omat) InitCredentials() {
 	omat.Credentials = newCredentialCache(omat)
-}
-
-func (omat *Omat) Prefix() string {
-	// TODO: This is wrong.  All wrong!
-	return fmt.Sprintf("/%s/%s", omat.OrganizationPrefix, omat.Environment)
 }
