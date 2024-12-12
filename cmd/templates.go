@@ -79,7 +79,7 @@ var launchTemplatesCmd = &cobra.Command{
 	Run: func(_ *cobra.Command, _ []string) {
 		omat := loadOmatConfig("") // TODO: Fixme!
 
-		details := awsutil.FindAndAssumeAdminRole(omat.DeployAccountSlug, omat)
+		details := awsutil.FindAndAssumeAdminRole(omat)
 
 		ec2Client := ec2.New(details.Session, details.Config)
 		templates, err := awsutil.FetchLaunchTemplates(ec2Client, nil)

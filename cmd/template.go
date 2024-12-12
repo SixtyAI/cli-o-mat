@@ -158,10 +158,10 @@ Errors:
 	Run: func(_ *cobra.Command, args []string) {
 		omat := loadOmatConfig("") // TODO: Fixme!
 
-		deployAcctDetails := awsutil.FindAndAssumeAdminRole(omat.DeployAccountSlug, omat)
+		deployAcctDetails := awsutil.FindAndAssumeAdminRole(omat)
 		deployAcctEC2Client := ec2.New(deployAcctDetails.Session, deployAcctDetails.Config)
 
-		buildAcctDetails := awsutil.FindAndAssumeAdminRole(omat.BuildAccountSlug, omat)
+		buildAcctDetails := awsutil.FindAndAssumeAdminRole(omat)
 		buildAcctEC2Client := ec2.New(buildAcctDetails.Session, buildAcctDetails.Config)
 
 		versions, err := awsutil.FetchLaunchTemplateVersions(deployAcctEC2Client, args[0], nil)

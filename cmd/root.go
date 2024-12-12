@@ -33,22 +33,17 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&region, "region", "", "", "Which AWS region to operate in")
 	rootCmd.PersistentFlags().StringVarP(&environment, "env", "", "", "Which logical environment to operate in")
 	rootCmd.PersistentFlags().StringVarP(&deployService, "deploy-service", "", "", "The name of the deploy_o_mat service")
-	rootCmd.PersistentFlags().StringVarP(&buildAccountSlug, "build-slug", "", "", "The build-account slug (e.g. ci-cd)")
-	rootCmd.PersistentFlags().StringVarP(&deployAccountSlug, "deploy-slug", "", "",
-		"The deploy-account slug (e.g. workload)")
 }
 
 // nolint: gochecknoglobals
 var (
-	region            string
-	environment       string
-	deployService     string
-	buildAccountSlug  string
-	deployAccountSlug string
+	region        string
+	environment   string
+	deployService string
 )
 
 func loadOmatConfig(accountName string) *config.Omat {
-	omat := config.NewOmat()
+	omat := config.NewOmat(accountName)
 
 	if err := omat.LoadConfig(); err != nil {
 		util.Fatalf(1, "Failed to load omat config.\n")
@@ -65,16 +60,6 @@ func loadOmatConfig(accountName string) *config.Omat {
 	if deployService != "" {
 		omat.DeployService = deployService
 	}
-
-	if buildAccountSlug != "" {
-		omat.BuildAccountSlug = buildAccountSlug
-	}
-
-	if deployAccountSlug != "" {
-		omat.DeployAccountSlug = deployAccountSlug
-	}
-
-	omat.AccountName = accountName
 
 	return omat
 }

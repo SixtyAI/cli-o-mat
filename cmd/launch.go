@@ -53,7 +53,7 @@ Errors:
 
 		omat := loadOmatConfig(accountName)
 
-		details := awsutil.FindAndAssumeAdminRole(omat.DeployAccountSlug, omat)
+		details := awsutil.FindAndAssumeAdminRole(omat)
 
 		ec2Client := ec2.New(details.Session, details.Config)
 

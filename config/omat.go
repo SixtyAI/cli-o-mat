@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path"
@@ -19,6 +20,7 @@ const (
 	CantFindSSMParam       = 14
 	ErrorLookingUpSSMParam = 15
 	SSMParamEmpty          = 16
+	CantParseSSMParam      = 17
 )
 
 type Omat struct {
@@ -29,19 +31,26 @@ type Omat struct {
 	Region             string `yaml:"region"`
 	Environment        string `yaml:"environment"`
 	DeployService      string `yaml:"deployService"`
-	BuildAccountSlug   string `yaml:"buildAccountSlug"`
-	DeployAccountSlug  string `yaml:"deployAccountSlug"`
+	ParamPrefix        string `yaml:"-"`
 }
 
-func NewOmat() *Omat {
+type accountInfoConfig struct {
+	AccountID   string `json:"account_id"`
+	Environment string `json:"environment"`
+	Name        string `json:"name"`
+	Prefix      string `json:"prefix"`
+	Purpose     string `json:"purpose"`
+	Slug        string `json:"slug"`
+}
+
+func NewOmat(accountName string) *Omat {
 	return &Omat{
-		AccountName:        "",
+		AccountName:        accountName,
 		OrganizationPrefix: "",
 		Region:             "us-east-1",
 		Environment:        "development",
 		DeployService:      "deployomat",
-		BuildAccountSlug:   "ci-cd",
-		DeployAccountSlug:  "workload",
+		ParamPrefix:        "",
 	}
 }
 
@@ -92,14 +101,6 @@ func (omat *Omat) loadConfigFromEnv() {
 	if deployService, wasSet := os.LookupEnv("OMAT_DEPLOY_SERVICE"); wasSet {
 		omat.DeployService = deployService
 	}
-
-	if buildAccountSlug, wasSet := os.LookupEnv("OMAT_BUILD_ACCOUNT_SLUG"); wasSet {
-		omat.BuildAccountSlug = buildAccountSlug
-	}
-
-	if deployAccountSlug, wasSet := os.LookupEnv("OMAT_DEPLOY_ACCOUNT_SLUG"); wasSet {
-		omat.DeployAccountSlug = deployAccountSlug
-	}
 }
 
 func (omat *Omat) LoadConfig() error {
@@ -114,7 +115,13 @@ func (omat *Omat) LoadConfig() error {
 
 	omat.loadConfigFromEnv()
 	omat.InitCredentials()
-	omat.FetchOrgPrefix()
+
+	if err = omat.FetchOrgPrefix(); err != nil {
+		return errors.Wrap(err, "couldn't load org prefix SSM param")
+	}
+	if err = omat.FetchAccountInfo(); err != nil {
+		return errors.Wrap(err, "couldn't load account info SSM param")
+	}
 
 	return nil
 }
@@ -141,6 +148,39 @@ func (omat *Omat) FetchOrgPrefix() error {
 	}
 
 	omat.OrganizationPrefix = orgPrefix
+
+	return nil
+}
+
+func (omat *Omat) FetchAccountInfo() error {
+	ssmClient := ssm.New(omat.Credentials.RootSession, omat.Credentials.RootAWSConfig)
+	infoParamName := "/omat/account_registry/" + omat.AccountName
+
+	infoParam, err := ssmClient.GetParameter(&ssm.GetParameterInput{
+		Name: aws.String(infoParamName),
+	})
+	if err != nil {
+		if strings.HasPrefix(err.Error(), "ParameterNotFound") {
+			util.Fatalf(CantFindSSMParam, "Couldn't find account info parameter: %s\n", infoParamName)
+		}
+
+		util.Fatalf(ErrorLookingUpSSMParam,
+			"Error looking up account info parameter %s, got: %s\n", infoParamName, err.Error())
+	}
+
+	accountInfo := aws.StringValue(infoParam.Parameter.Value)
+	if accountInfo == "" {
+		util.Fatalf(SSMParamEmpty, "Paramater '%s' was empty.\n", infoParamName)
+	}
+
+	fmt.Printf("Raw account info: %s\n", accountInfo)
+	var data accountInfoConfig
+	if err = json.Unmarshal([]byte(accountInfo), &data); err != nil {
+		util.Fatalf(CantParseSSMParam, "Couldn't parse account info parameter: %s\nGot: %s\n", infoParamName, accountInfo)
+	}
+
+	omat.ParamPrefix = data.Prefix
+	fmt.Printf("Prefix: %s\n", omat.ParamPrefix)
 
 	return nil
 }

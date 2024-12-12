@@ -30,8 +30,6 @@ tool with -h for details)
 | region             | OMAT_REGION              | --region         |
 | environment        | OMAT_ENVIRONMENT         | --env            |
 | deployService      | OMAT_DEPLOY_SERVICE      | --deploy-service |
-| buildAccountSlug   | OMAT_BUILD_ACCOUNT_SLUG  | --build-slug     |
-| deployAccountSlug  | OMAT_DEPLOY_ACCOUNT_SLUG | --deploy-slug    |
 +--------------------+--------------------------+------------------+
 
 Run without options for a list of sub-commands.
