@@ -16,9 +16,9 @@ import (
 )
 
 const (
-	CantFindOrgPrefix       = 14
-	ErrorLookingUpRoleParam = 15
-	OrgPrefixEmpty          = 16
+	CantFindSSMParam       = 14
+	ErrorLookingUpSSMParam = 15
+	SSMParamEmpty          = 16
 )
 
 type Omat struct {
@@ -128,16 +128,16 @@ func (omat *Omat) FetchOrgPrefix() error {
 	})
 	if err != nil {
 		if strings.HasPrefix(err.Error(), "ParameterNotFound") {
-			util.Fatalf(CantFindOrgPrefix, "Couldn't find org prefix parameter: %s\n", roleParamName)
+			util.Fatalf(CantFindSSMParam, "Couldn't find org prefix parameter: %s\n", roleParamName)
 		}
 
-		util.Fatalf(ErrorLookingUpRoleParam,
+		util.Fatalf(ErrorLookingUpSSMParam,
 			"Error looking up org prefix parameter %s, got: %s\n", roleParamName, err.Error())
 	}
 
 	orgPrefix := aws.StringValue(roleParam.Parameter.Value)
 	if orgPrefix == "" {
-		util.Fatalf(OrgPrefixEmpty, "Paramater '%s' was empty.\n", roleParamName)
+		util.Fatalf(SSMParamEmpty, "Paramater '%s' was empty.\n", roleParamName)
 	}
 
 	omat.OrganizationPrefix = orgPrefix
