@@ -145,7 +145,7 @@ const NoSuchTemplate = 103
 
 // nolint: gochecknoglobals
 var launchTemplateCmd = &cobra.Command{
-	Use:   "template template-name",
+	Use:   "template account template-name",
 	Short: "Show details about a launch template.",
 	Long: fmt.Sprintf(`
 Show details about a launch template.
@@ -154,9 +154,12 @@ Errors:
 
 %3d - The specified launch template was not found.`,
 		NoSuchTemplate),
-	Args: cobra.ExactArgs(1),
+	Args: cobra.ExactArgs(2),
 	Run: func(_ *cobra.Command, args []string) {
-		omat := loadOmatConfig("") // TODO: Fixme!
+		accountName := args[0]
+		templateName := args[1]
+
+		omat := loadOmatConfig(accountName)
 
 		deployAcctDetails := awsutil.FindAndAssumeAdminRole(omat)
 		deployAcctEC2Client := ec2.New(deployAcctDetails.Session, deployAcctDetails.Config)
@@ -164,7 +167,7 @@ Errors:
 		buildAcctDetails := awsutil.FindAndAssumeAdminRole(omat)
 		buildAcctEC2Client := ec2.New(buildAcctDetails.Session, buildAcctDetails.Config)
 
-		versions, err := awsutil.FetchLaunchTemplateVersions(deployAcctEC2Client, args[0], nil)
+		versions, err := awsutil.FetchLaunchTemplateVersions(deployAcctEC2Client, templateName, nil)
 		if err != nil {
 			util.Fatal(AWSAPIError, err)
 		}

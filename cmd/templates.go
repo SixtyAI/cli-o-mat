@@ -76,8 +76,10 @@ var launchTemplatesCmd = &cobra.Command{
 	Use:   "templates",
 	Short: "List launch templates.",
 	Long:  ``,
-	Run: func(_ *cobra.Command, _ []string) {
-		omat := loadOmatConfig("") // TODO: Fixme!
+	Args:  cobra.ExactArgs(1),
+	Run: func(_ *cobra.Command, args []string) {
+		accountName := args[0]
+		omat := loadOmatConfig(accountName)
 
 		details := awsutil.FindAndAssumeAdminRole(omat)
 
