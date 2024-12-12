@@ -5,14 +5,26 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/cockroachdb/errors"
 	"gopkg.in/yaml.v3"
+
+	"github.com/SixtyAI/cli-o-mat/util"
+)
+
+const (
+	CantFindOrgPrefix       = 14
+	ErrorLookingUpRoleParam = 15
+	OrgPrefixEmpty          = 16
 )
 
 type Omat struct {
 	Credentials *CredentialCache `yaml:"-"`
 
+	AccountName        string `yaml:"-"`
 	OrganizationPrefix string `yaml:"organizationPrefix"`
 	Region             string `yaml:"region"`
 	Environment        string `yaml:"environment"`
@@ -23,7 +35,8 @@ type Omat struct {
 
 func NewOmat() *Omat {
 	return &Omat{
-		OrganizationPrefix: "teak",
+		AccountName:        "",
+		OrganizationPrefix: "",
 		Region:             "us-east-1",
 		Environment:        "development",
 		DeployService:      "deployomat",
@@ -100,6 +113,34 @@ func (omat *Omat) LoadConfig() error {
 	}
 
 	omat.loadConfigFromEnv()
+	omat.InitCredentials()
+	omat.FetchOrgPrefix()
+
+	return nil
+}
+
+func (omat *Omat) FetchOrgPrefix() error {
+	ssmClient := ssm.New(omat.Credentials.RootSession, omat.Credentials.RootAWSConfig)
+	roleParamName := "/omat/organization_prefix"
+
+	roleParam, err := ssmClient.GetParameter(&ssm.GetParameterInput{
+		Name: aws.String(roleParamName),
+	})
+	if err != nil {
+		if strings.HasPrefix(err.Error(), "ParameterNotFound") {
+			util.Fatalf(CantFindOrgPrefix, "Couldn't find org prefix parameter: %s\n", roleParamName)
+		}
+
+		util.Fatalf(ErrorLookingUpRoleParam,
+			"Error looking up org prefix parameter %s, got: %s\n", roleParamName, err.Error())
+	}
+
+	orgPrefix := aws.StringValue(roleParam.Parameter.Value)
+	if orgPrefix == "" {
+		util.Fatalf(OrgPrefixEmpty, "Paramater '%s' was empty.\n", roleParamName)
+	}
+
+	omat.OrganizationPrefix = orgPrefix
 
 	return nil
 }
@@ -109,5 +150,6 @@ func (omat *Omat) InitCredentials() {
 }
 
 func (omat *Omat) Prefix() string {
+	// TODO: This is wrong.  All wrong!
 	return fmt.Sprintf("/%s/%s", omat.OrganizationPrefix, omat.Environment)
 }

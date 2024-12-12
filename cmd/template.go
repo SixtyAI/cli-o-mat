@@ -156,7 +156,7 @@ Errors:
 		NoSuchTemplate),
 	Args: cobra.ExactArgs(1),
 	Run: func(_ *cobra.Command, args []string) {
-		omat := loadOmatConfig()
+		omat := loadOmatConfig("") // TODO: Fixme!
 
 		deployAcctDetails := awsutil.FindAndAssumeAdminRole(omat.DeployAccountSlug, omat)
 		deployAcctEC2Client := ec2.New(deployAcctDetails.Session, deployAcctDetails.Config)

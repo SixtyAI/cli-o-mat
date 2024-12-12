@@ -2,13 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"strings"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/spf13/cobra"
-
-	"github.com/SixtyAI/cli-o-mat/util"
 )
 
 const (
@@ -23,31 +18,9 @@ var orgPrefixCmd = &cobra.Command{
 	Short: "Show the detected org prefix.",
 	Long:  ``,
 	Run: func(_ *cobra.Command, _ []string) {
-		omat := loadOmatConfig()
+		omat := loadOmatConfig("") // TODO: Fixme?
 
-		ssmClient := ssm.New(omat.Credentials.RootSession, omat.Credentials.RootAWSConfig)
-		roleParamName := "/omat/organization_prefix"
-		fmt.Printf("Looking for SSM parameter %s\n", roleParamName)
-
-		roleParam, err := ssmClient.GetParameter(&ssm.GetParameterInput{
-			Name: aws.String(roleParamName),
-		})
-		if err != nil {
-			if strings.HasPrefix(err.Error(), "ParameterNotFound") {
-				util.Fatalf(CantFindOrgPrefix, "Couldn't find org prefix parameter: %s\n", roleParamName)
-			}
-
-			fmt.Printf("Error looking up org prefix parameter %s, got: %s\n", roleParamName, err.Error())
-			util.Fatalf(ErrorLookingUpRoleParam,
-				"Error looking up org prefix parameter %s, got: %s\n", roleParamName, err.Error())
-		}
-
-		orgPrefix := aws.StringValue(roleParam.Parameter.Value)
-		if orgPrefix == "" {
-			util.Fatalf(OrgPrefixEmpty, "Paramater '%s' was empty.\n", roleParamName)
-		}
-
-		fmt.Printf("Organization prefix: %s\n", orgPrefix)
+		fmt.Printf("Organization prefix: %s\n", omat.OrganizationPrefix)
 	},
 }
 

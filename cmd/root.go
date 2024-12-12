@@ -47,7 +47,7 @@ var (
 	deployAccountSlug string
 )
 
-func loadOmatConfig() *config.Omat {
+func loadOmatConfig(accountName string) *config.Omat {
 	omat := config.NewOmat()
 
 	if err := omat.LoadConfig(); err != nil {
@@ -74,7 +74,7 @@ func loadOmatConfig() *config.Omat {
 		omat.DeployAccountSlug = deployAccountSlug
 	}
 
-	omat.InitCredentials()
+	omat.AccountName = accountName
 
 	return omat
 }

@@ -23,7 +23,7 @@ const (
 
 // nolint: gochecknoglobals,gomnd
 var launchCmd = &cobra.Command{
-	Use:   "launch template-name keypair-name [subnet-id]",
+	Use:   "launch account template-name keypair-name [subnet-id]",
 	Short: "Launch an EC2 instance from a launch template.",
 	Long: fmt.Sprintf(`Launch an EC2 instance from a launch template.
 
@@ -40,20 +40,22 @@ Errors:
 		CouldntLaunchInstance,
 		NoMatchingLaunchTemplates,
 		MultipleLaunchTemplates),
-	Args: cobra.RangeArgs(2, 3), // nolint: mnd
+	Args: cobra.RangeArgs(3, 4), // nolint: mnd
 	Run: func(_ *cobra.Command, args []string) {
-		omat := loadOmatConfig()
+		accountName := args[0]
+		namePrefix := args[1]
+		keypair := args[2]
+
+		var subnetID *string
+		if len(args) == 4 { // nolint: mnd
+			subnetID = aws.String(args[3])
+		}
+
+		omat := loadOmatConfig(accountName)
 
 		details := awsutil.FindAndAssumeAdminRole(omat.DeployAccountSlug, omat)
 
 		ec2Client := ec2.New(details.Session, details.Config)
-		namePrefix := args[0]
-		keypair := args[1]
-
-		var subnetID *string
-		if len(args) == 3 { // nolint: mnd
-			subnetID = aws.String(args[2])
-		}
 
 		if launchVersion == "" {
 			launchVersion = "$Latest"
