@@ -68,11 +68,13 @@ func showImages(shortHashes bool, images []*ec2.Image) {
 
 // nolint: gochecknoglobals
 var imagesCmd = &cobra.Command{
-	Use:   "images",
+	Use:   "images account",
 	Short: "List AMIs.",
 	Long:  ``,
-	Run: func(_ *cobra.Command, _ []string) {
-		omat := loadOmatConfig("") // TODO: Fixme!
+	Args:  cobra.ExactArgs(1),
+	Run: func(_ *cobra.Command, args []string) {
+		accountName := args[0]
+		omat := loadOmatConfig(accountName)
 
 		details := awsutil.FindAndAssumeAdminRole(omat)
 

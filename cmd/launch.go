@@ -94,7 +94,7 @@ Errors:
 		name := candidates[0]
 		fmt.Printf("Using launch template %s...\n", name)
 
-		resp, err := ec2Client.RunInstances(&ec2.RunInstancesInput{
+		input := ec2.RunInstancesInput{
 			LaunchTemplate: &ec2.LaunchTemplateSpecification{
 				LaunchTemplateName: &name,
 				Version:            aws.String(launchVersion),
@@ -102,19 +102,23 @@ Errors:
 			InstanceType:                      instanceType,
 			InstanceInitiatedShutdownBehavior: aws.String("terminate"),
 			KeyName:                           aws.String(keypair),
-			BlockDeviceMappings: []*ec2.BlockDeviceMapping{
+
+			MinCount: aws.Int64(1),
+			MaxCount: aws.Int64(1),
+			SubnetId: subnetID,
+		}
+		if volumeSize > 0 {
+			input.BlockDeviceMappings = []*ec2.BlockDeviceMapping{
 				{
 					DeviceName: aws.String("/dev/xvda"),
 					Ebs: &ec2.EbsBlockDevice{
 						VolumeSize: aws.Int64(volumeSize),
 					},
 				},
-			},
+			}
+		}
 
-			MinCount: aws.Int64(1),
-			MaxCount: aws.Int64(1),
-			SubnetId: subnetID,
-		})
+		resp, err := ec2Client.RunInstances(&input)
 		if err != nil {
 			util.Fatal(AWSAPIError, err)
 		}
@@ -167,13 +171,10 @@ var (
 	volumeSize    int64
 )
 
-const DefaultVolumeSize = 4
-
 // nolint: gochecknoinits
 func init() {
 	rootCmd.AddCommand(launchCmd)
 	launchCmd.Flags().StringVarP(&launchVersion, "version", "", "", "Version of launch template to use (default: $Latest)")
 	launchCmd.Flags().StringVarP(&launchType, "type", "", "", "Instance type to launch (default from launch template)")
-	launchCmd.Flags().Int64VarP(&volumeSize, "size", "", DefaultVolumeSize,
-		fmt.Sprintf("Size of EBS volume in GB (default: %d)", DefaultVolumeSize))
+	launchCmd.Flags().Int64VarP(&volumeSize, "size", "", 0, "Size of EBS volume in GB (omit for default)")
 }
