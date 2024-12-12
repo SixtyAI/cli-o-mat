@@ -19,7 +19,7 @@ const (
 
 func FindAndAssumeAdminRole(omat *config.Omat) *config.SessionDetails {
 	ssmClient := ssm.New(omat.Credentials.RootSession, omat.Credentials.RootAWSConfig)
-	roleParamName := fmt.Sprintf("%s/roles/admin", omat.ParamPrefix)
+	roleParamName := omat.ParamPrefix + "/roles/admin"
 	fmt.Printf("Looking for SSM parameter %s\n", roleParamName)
 
 	roleParam, err := ssmClient.GetParameter(&ssm.GetParameterInput{

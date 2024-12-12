@@ -34,7 +34,7 @@ type Omat struct {
 }
 
 type accountInfoConfig struct {
-	AccountID   string `json:"account_id"`
+	AccountID   string `json:"account_id"` // nolint: tagliatelle
 	Environment string `json:"environment"`
 	Name        string `json:"name"`
 	Prefix      string `json:"prefix"`
